@@ -3,5 +3,5 @@ sqlalchemy
 requests
 torch
 transformers
-Pillow
+pillow
 lxml
