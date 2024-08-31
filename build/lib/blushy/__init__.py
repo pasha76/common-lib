@@ -1,6 +1,6 @@
 # common/__init__.py
-from common.utils import *
-from common.utils.labeler import *
-from common.utils.base import *
+from blushy.utils import *
+from blushy.utils.labeler import *
+from blushy.utils.base import *
 __all__ = ["Labeler", "url_to_pil_image"]
 
