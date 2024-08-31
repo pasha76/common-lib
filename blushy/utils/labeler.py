@@ -12,7 +12,7 @@ MD_REVISION = "2024-07-23"
 PATH= "/users/tolgagunduz/downloads/checkpoints/moondream-ft"
 
 if env.is_remote():
-    PATH= "checkpoints/moondream-ft"
+    PATH= "model-weights/moondream-ft"
 
     
 
