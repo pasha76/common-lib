@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 setup(
     name='common',  # Name of your package
     version='0.1.0',
-    packages=find_packages(include=['common', 'common.*']),
+    packages=find_packages(exclude=['build', 'build.*']),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
        "sqlalchemy",
        "requests",
        "torch",
        "transformers",
-       "Pillow",
+       "pillow",
        "lxml"
     ],
     include_package_data=True,
