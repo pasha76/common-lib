@@ -35,3 +35,6 @@ common/db/models/user_type.py
 common/db/models/vendor.py
 common/db/models/vendor_status.py
 common/db/models/visit_post.py
+common/utils/__init__.py
+common/utils/base.py
+common/utils/labeler.py
