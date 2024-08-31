@@ -12,13 +12,14 @@ MD_REVISION = "2024-07-23"
 PATH= "/users/tolgagunduz/downloads/checkpoints/moondream-ft"
 
 if env.is_remote():
-    PATH= "checkpoints/moondream-ft"
+    PATH= "./model-weights/moondream-ft"
 
     
 
 
 class Labeler:
     def __init__(self):
+        print("Loading Moondream model...",PATH)
         # Load model with custom code (trusting remote code)
         self.moondream = AutoModelForCausalLM.from_pretrained(
             PATH,
@@ -28,7 +29,7 @@ class Labeler:
             torch_dtype=DTYPE,
               device_map={"": DEVICE})
         
-        self.tokenizer = AutoTokenizer.from_pretrained("vikhyatk/moondream2", revision=MD_REVISION)# Ensure model is in evaluation mode
+        self.tokenizer = AutoTokenizer.from_pretrained("vikhyatk/moondream2",cache_dir=PATH ,revision=MD_REVISION)# Ensure model is in evaluation mode
         self.moondream.eval()
 
     def _parse_xml_to_dict(self,xml_string):
