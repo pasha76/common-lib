@@ -1,7 +1,7 @@
 from beam import env
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from common.utils.base import url_to_pil_image
+from blushy.utils.base import url_to_pil_image
 import xml.etree.ElementTree as ET
 import time
 

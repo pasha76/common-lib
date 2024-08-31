@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey,DateTime,Float,Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from common.db.models import Base
+from blushy.db.models import Base
 from sqlalchemy import inspect
 from sqlalchemy.ext.hybrid import hybrid_property
 
