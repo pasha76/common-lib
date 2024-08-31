@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='common',  # Name of your package
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(exclude=['build', 'build.*',"common.egg*"]),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
