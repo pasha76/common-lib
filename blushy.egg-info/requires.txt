@@ -1,0 +1,7 @@
+pymysql
+sqlalchemy
+requests
+torch
+transformers
+pillow
+lxml
