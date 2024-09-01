@@ -3,6 +3,7 @@
 # Import specific classes or functions from each module
 from .labeler import Labeler
 from .base import url_to_pil_image,deserialize_embedding,serialize_embedding
+from .siglip_manager import SiglipManager
 
 # Define the public API of the package
 __all__ = ['Labeler', 'url_to_pil_image']
