@@ -41,4 +41,5 @@ blushy/utils/base.py
 blushy/utils/cache_manager.py
 blushy/utils/gcs.py
 blushy/utils/labeler.py
+blushy/utils/siglip_manager.py
 blushy/utils/vector_manager.py
