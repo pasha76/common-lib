@@ -3,8 +3,9 @@
 from blushy.db import get_session, Base, init_db
 from blushy.utils.labeler import Labeler
 from blushy.utils.base import url_to_pil_image
+from blushy.utils.siglip_manager import SiglipManager
 from blushy.utils import *
 
 
 # Export common modules for easy import
-__all__ = ['get_session', 'Base', 'init_db', 'Labeler', 'url_to_pil_image']
+__all__ = ['get_session', 'Base', 'init_db', 'Labeler', 'url_to_pil_image',"SiglipManager"]
