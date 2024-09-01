@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.1.18',
+    version='0.1.19',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*"]),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
@@ -13,7 +13,6 @@ setup(
        "pillow",
        "lxml",
        "grpcio-tools",
-       "beta9",
        "protobuf",
        "qdrant-client"
     ],
