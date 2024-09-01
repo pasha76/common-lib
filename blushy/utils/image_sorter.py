@@ -1,21 +1,28 @@
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
+from blushy.utils.base import url_to_pil_image
+from blushy.utils.siglip_manager import SiglipManager
+from torch import embedding
 
 class ItemImage:
     def __init__(self, embedding):
         self.embedding = np.array(embedding)
 
 class ImageSorter:
-    def __init__(self, item_images):
+    def __init__(self, item_images=[],siglip_manager=None):
         """
         Initializes the ImageSorter with a list of ItemImage objects.
         
         :param item_images: List of ItemImage objects
         """
+   
         self.item_images = item_images
-        self.embeddings = np.array([item.embedding for item in item_images])
         self.nearest_neighbors = NearestNeighbors(n_neighbors=len(item_images), algorithm='auto')
-        self.nearest_neighbors.fit(self.embeddings)
+        if len(item_images)>0:
+            self.embeddings = np.array([item.embedding for item in item_images])
+            self.nearest_neighbors.fit(self.embeddings)
+        self.siglip_manager = siglip_manager
+
 
     def sort_by_proximity(self, reference_embedding):
         """
@@ -29,6 +36,27 @@ class ImageSorter:
         sorted_item_images = [self.item_images[idx] for idx in indices.flatten()]
 
         return sorted_item_images
+    
+
+    def image_already_exists(self,image_source,threshold=0.1):
+        embedding = self.siglip_manager.get_embeddings(image_source)
+        embedding = embedding.tolist()
+        if len(self.item_images)==0:
+            self.item_images.append(embedding)
+            return False
+        self.embeddings = np.array([item.embedding for item in  self.item_images])
+        self.nearest_neighbors.fit(self.embeddings)
+        reference_embedding = np.array(embedding).reshape(1, -1)
+        distances, indices = self.nearest_neighbors.kneighbors(reference_embedding)
+        if distances[0][0]<threshold:
+            return True
+        else:
+            self.item_images.append(embedding)
+            return False
+        
+
+        
+        
 
 # Example usage
 if __name__ == "__main__":

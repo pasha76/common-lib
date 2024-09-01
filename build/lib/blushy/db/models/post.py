@@ -43,6 +43,7 @@ class Post(Base):
     description = Column(String(5000), nullable=True)
     quality_score = Column(Float,  nullable=False)
     similarity_score = Column(Float,  nullable=False)
+    image_embedding = Column(Text, nullable=True)  
     master_gender_id = Column(Integer, ForeignKey('master_genders.id'))  # Correct ForeignKey
     master_gender = relationship('MasterGender', back_populates='posts')
     post_scope=Column(Integer, nullable=True)

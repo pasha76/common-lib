@@ -11,3 +11,6 @@ qdrant-client
 scikit-learn
 SentencePiece
 numpy
+sentence-transformers
+google-cloud
+google-cloud-storage

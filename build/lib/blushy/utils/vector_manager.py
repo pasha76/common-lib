@@ -107,8 +107,7 @@ class VectorManager:
                         
                     ))
             
-            filter=Filter(must=filters
-                          )
+            filter=Filter(must=filters)
         result = self.client.search(
             collection_name=self.collection_name,
             query_vector=query_vector,
