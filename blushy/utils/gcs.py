@@ -10,8 +10,8 @@ import numpy as np
 
 
 class GCSUploader:
-    def __init__(self, bucket_name):
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="blushy/cred/fashion-maidentech-ff2cd2d26347.json"
+    def __init__(self, bucket_name, cred_path=None):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=cred_path
         self.bucket_name = bucket_name
         self.storage_client = storage.Client()
         self.bucket = self.storage_client.bucket(bucket_name)
