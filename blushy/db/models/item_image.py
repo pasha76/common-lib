@@ -20,6 +20,8 @@ class ItemImage(Base):
     
     image_class=Column(Integer)
     created_at = Column(DateTime, default=datetime.utcnow)
+    embedding = Column(Text, nullable=True)  # Store as JSON string in a TEXT field    
+
 
 
     @hybrid_property
