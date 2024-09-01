@@ -5,9 +5,8 @@ from qdrant_client import QdrantClient, models
 from qdrant_client import QdrantClient
 
 class VectorManager:
-    def __init__(self, collection_name="vendors", vector_size=768, distance=Distance.COSINE):
-        self.client = QdrantClient(url="https://57bae1dd-4983-40da-8fc4-337da62dd839.us-east4-0.gcp.cloud.qdrant.io:6333", 
-                                   api_key="iiVKB5Zr8_d1GbUoLTl5-z5yHQAl4gMIpqjWbbbFWMtxfQIiZ2uLag")
+    def __init__(self, url,api_key,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
+        self.client = QdrantClient(url,api_key)
         self.collection_name = collection_name
         self.vector_size = vector_size
         self.distance = distance

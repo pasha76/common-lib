@@ -10,8 +10,7 @@ import numpy as np
 
 
 class GCSUploader:
-    def __init__(self, bucket_name, cred_path=None):
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=cred_path
+    def __init__(self, bucket_name):
         self.bucket_name = bucket_name
         self.storage_client = storage.Client()
         self.bucket = self.storage_client.bucket(bucket_name)
