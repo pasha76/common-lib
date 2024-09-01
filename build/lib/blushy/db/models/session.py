@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
-
+from blushy.db.models import base
 
 DATABASE_URL="mysql+pymysql://root:tolga1194031@35.184.196.46/blushydb"
 # Create engine and session
@@ -16,4 +16,8 @@ def get_session():
     
     :return: SQLAlchemy session object.
     """
-    return Session()
+    session = Session()
+    if not session or not session.is_active:
+        base.init_db()
+        session = Session()
+    return session
