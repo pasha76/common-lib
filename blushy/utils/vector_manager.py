@@ -3,9 +3,12 @@ from qdrant_client.models import PointStruct
 from qdrant_client.models import Distance, VectorParams,MatchValue,Filter,FieldCondition
 from qdrant_client import QdrantClient, models
 from qdrant_client import QdrantClient
+import os
 
 class VectorManager:
-    def __init__(self, url,api_key,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
+    def __init__(self,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
+        url= os.getenv('QDRANT_URL')
+        api_key= os.getenv('QDRANT_API_KEY')
         self.client = QdrantClient(url,api_key)
         self.collection_name = collection_name
         self.vector_size = vector_size
