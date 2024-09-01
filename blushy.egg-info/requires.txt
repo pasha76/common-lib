@@ -8,3 +8,6 @@ lxml
 grpcio-tools
 protobuf
 qdrant-client
+scikit-learn
+SentencePiece
+numpy
