@@ -11,10 +11,10 @@ import json
 class SiglipManager:
 
     def __init__(self) -> None:
-        model_name="google/siglip-base-patch16-224"
-        #model_name = "google/siglip-so400m-patch14-384"
+        #model_name="google/siglip-base-patch16-224"
+        model_name = "google/siglip-so400m-patch14-384"
         if env.is_remote():
-            cache_path= " /volumes/model-weights/model-weigths/"
+            cache_path= "/volumes/model-weights/model-weigths/"
             self.model = AutoModel.from_pretrained(model_name,cache_dir=cache_path)
             self.processor = AutoProcessor.from_pretrained(model_name,cache_dir=cache_path)
         else:
