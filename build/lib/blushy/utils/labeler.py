@@ -6,9 +6,7 @@ import xml.etree.ElementTree as ET
 import time
 
 # Set device and data type for CPU
-DEVICE = "cpu"
-DTYPE = torch.float32
-MD_REVISION = "2024-07-23"
+
 PATH= "/users/tolgagunduz/downloads/checkpoints/moondream-ft"
 
 if env.is_remote():
@@ -18,8 +16,11 @@ if env.is_remote():
 
 
 class Labeler:
-    def __init__(self):
+    def __init__(self,device="cpu",PATH=PATH):
         print("Loading Moondream model...",PATH)
+        DEVICE = device
+        DTYPE = torch.float32 if DEVICE == "cpu" else torch.float16
+        MD_REVISION = "2024-07-23"
         # Load model with custom code (trusting remote code)
         self.moondream = AutoModelForCausalLM.from_pretrained(
             PATH,
@@ -89,6 +90,10 @@ class Labeler:
             image_source = url_to_pil_image(image_source)
         xml_description=self._image_to_xml(image_source)
         return self._parse_xml_to_dict(xml_description)
-
+    
+    def encode(self, image_sources):
+        if isinstance(image_sources, str):
+            image_sources = url_to_pil_image(image_sources)
+        return self.moondream.encode_image(image_sources)
 
         

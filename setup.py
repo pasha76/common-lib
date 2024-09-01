@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.1.15',
+    version='0.1.16',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*"]),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
@@ -11,7 +11,11 @@ setup(
        "torch",
        "transformers",
        "pillow",
-       "lxml"
+       "lxml",
+       "grpcio-tools",
+       "beta9",
+       "protobuf",
+       "qdrant-client",
     ],
     include_package_data=True,
     description='A utility package for common functionalities',

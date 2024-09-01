@@ -5,3 +5,7 @@ torch
 transformers
 pillow
 lxml
+grpcio-tools
+beta9
+protobuf
+qdrant-client

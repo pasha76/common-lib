@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "fashion-maidentech",
+  "private_key_id": "ff2cd2d2634795ece08c4a88f69be17e9ecdd44d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCurdIS3+luxqLR\nJnaLhNAdTKbKMMVAGhNleaFBm3V8jWFQpJha5VWZ+f76EJzt7leiWYjT95J9XhEZ\nCqZSp2Z+llYl9EgmLFP7KBnseKCgnKBKCw6mCNzRup0NGk1/Cjubl5Ut4YaTNi3Y\nmLxEXMmiawLWZanKDxBJmwMmSvaMtzjKyJm2RaF6PB79vE+UUVFFfI+3WmKshdTR\nN06Ghmkn+gj77TKCfefBU1XczBYQEI1wrbdNlM2hDjk9HEm7Sjq0EQXvTKySOmbH\nR1CkZXmRTtcuw+q3uZopXT9+z+OiurQL18u8UxrworacyFDFOrTPBnfxMZ/imRxv\n6mAspaWTAgMBAAECggEAP1N2uC8Cwo0yk55dFaF1jVmvkddyexW4+G3K3y0Lv7bF\nk+XH8hP4H5U5MdD6A2wHyyyoZSf4rIiArFJnD8nuZ2/7FVFlIqmpXIEiPM9SdEez\n+IPfsKO/4izEKO7jL243Q+YFSBfdoNrgbgiZIDN/Sel/othCYKVrYzPWRXihv0tH\ni7E704ZqoRdruz3wlufwielJbxFMWRV7cJpMnxRx42adgfXDb9UAkN7zfchS+QKl\nkKvdOPQtLKV0etI3ReICCg+jMiNACipvSmqnJtAdk5gdqWafGfX81pWDmjg8D4n4\nP3oH5zoMhrwQ8aha69TjQ163Cs+yvy2IEWqziXwq0QKBgQDjMx5tY85gtrvE2Mg4\nX8V3iPFRBfza4Xnhy4LasZa0RTG7u/bIeMu1K/WxbKnHCnu6yEVclCuNGSR80nCP\nfek2pVWg1Xx7i5guaHlomBpti/PdM1JkOcvNDd9IwlAAcockTCSmSPZMPCj56QzU\n489QVm4lup9kilm9Xgvx12WpuQKBgQDE0ljWwDHGZhq0Nw8NGZ/+px1Wak7ZwOCF\nXZZmIgIcQvbW4bvDKUA9A9A35RjfXnpizPDJcB3AT9r73ewKqYt4OzxVv8NNiB7x\n8ooCBW07PVAEBNCFnOUY5wPA1+QZ+Fre2mLZEJnDdVbXPlkHGb3lAy55p36dlJr3\nQSmIRB7/qwKBgQDa0ErHs835m0QwC1CZ6rL1svAmxouGCo4mBqiaE1s/dzy0wAyn\nep9Gd3YDUNIanmAXvfX/ebyQAd0AUnSR3gQT2xwi8DkZi5IfcAMt1v/s7VMKgPkj\nCf7cGDYpjusZ4zOAo8zQUYjUV0RnnCn9hwINL5CZyajlXdGb7c23N2n0EQKBgHpS\nKDg+9jBRYKND3KzNkivXfFoqc5rNTjxUb5ZF6H3b+ECPxfuCdZP1/L/gN9cKhpFE\nwRjP/w14E6aYw4vU1wL//X1lUmGrCWBg1fhvmvVII6R7wYRof9E8MY72HaMuQHtj\nyi8RLB7XnALlkrrg+q2LjqS4ve39X1nvO3qeq41FAoGBANp8StavCrM6HaFlHoNs\nBYxb84dtBOLVuT3es/Nqrd2tv84R4ySPetlqZorOVto2KTWe/+/v9eEDXar0TbO2\nFjswoTLCmnhmtxOG9EB4Wqn3ymCH4kOfl1KIU/q40qqZt5YV9/QJFLXOCt6Me0KI\nuPMW+n1dA0DKeegfsgehYj3y\n-----END PRIVATE KEY-----\n",
+  "client_email": "storage-service-account@fashion-maidentech.iam.gserviceaccount.com",
+  "client_id": "102103510101026790608",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/storage-service-account%40fashion-maidentech.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

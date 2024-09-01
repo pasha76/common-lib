@@ -5,6 +5,7 @@ blushy.egg-info/SOURCES.txt
 blushy.egg-info/dependency_links.txt
 blushy.egg-info/requires.txt
 blushy.egg-info/top_level.txt
+blushy/affiliates/__init__.py
 blushy/db/__init__.py
 blushy/db/models/__init__.py
 blushy/db/models/ai_clothe_type.py
@@ -37,4 +38,7 @@ blushy/db/models/vendor_status.py
 blushy/db/models/visit_post.py
 blushy/utils/__init__.py
 blushy/utils/base.py
+blushy/utils/cache_manager.py
+blushy/utils/gcs.py
 blushy/utils/labeler.py
+blushy/utils/vector_manager.py
