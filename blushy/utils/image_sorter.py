@@ -1,6 +1,6 @@
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
-from blushy.utils.base import url_to_pil_image
+from blushy.utils.base import url_to_pil_image,deserialize_embedding
 from blushy.utils.siglip_manager import SiglipManager
 from torch import embedding
 
@@ -19,7 +19,9 @@ class ImageSorter:
         self.item_images = item_images
         self.nearest_neighbors = NearestNeighbors(n_neighbors=len(item_images), algorithm='auto')
         if len(item_images)>0:
-            self.embeddings = np.array([item.embedding for item in item_images])
+            self.embeddings = np.array([deserialize_embedding(item.embedding)[0] for item in item_images if item.embedding is not None])
+  
+            self.embeddings = self.embeddings.reshape(self.embeddings.shape[0],-1)
             self.nearest_neighbors.fit(self.embeddings)
         self.siglip_manager = siglip_manager
 

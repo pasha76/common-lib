@@ -9,7 +9,7 @@ class VectorManager:
     def __init__(self,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
         url= os.getenv('QDRANT_URL')
         api_key= os.getenv('QDRANT_API_KEY')
-        self.client = QdrantClient(url,api_key)
+        self.client = QdrantClient(url=url,api_key=api_key)
         self.collection_name = collection_name
         self.vector_size = vector_size
         self.distance = distance

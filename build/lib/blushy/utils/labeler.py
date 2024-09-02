@@ -72,7 +72,7 @@ class Labeler:
             print(f"Unexpected error while parsing XML: {e}")
             return None
 
-        return parsed_items[0]
+        return parsed_items
 
     def _image_to_xml(self, image_source):
         description_xml = self.moondream.answer_question(
@@ -90,6 +90,13 @@ class Labeler:
             image_source = url_to_pil_image(image_source)
         xml_description=self._image_to_xml(image_source)
         return self._parse_xml_to_dict(xml_description)
+    
+    def label_the_clothe_type(self,image_source,ai_clothe_type):
+        label_as_dicts=self.label(image_source)
+        for label_as_dict in label_as_dicts:
+            if label_as_dict["type"]==ai_clothe_type:
+                return label_as_dict
+        return None
     
     def encode(self, image_sources):
         if isinstance(image_sources, str):
