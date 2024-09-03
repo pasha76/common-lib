@@ -64,3 +64,7 @@ class Post(Base):
     clicked_items = relationship('ClickedItem', back_populates='post')
     visited_posts = relationship('VisitPost', back_populates='post')    
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {c.key: getattr(self, c.key)
+                for c in inspect(self).mapper.column_attrs}
