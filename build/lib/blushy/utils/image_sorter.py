@@ -35,7 +35,18 @@ class ImageSorter:
         """
         reference_embedding = np.array(reference_embedding).reshape(1, -1)
         distances, indices = self.nearest_neighbors.kneighbors(reference_embedding)
-        sorted_item_images = [(distance,self.item_images[idx]) for distance,idx in zip(distances.flatten(),indices.flatten())]
+        #sorted_item_images = [(distance,self.item_images[idx]) for distance,idx in zip(distances.flatten(),indices.flatten())]
+
+
+        # Convert distances to similarity percentages
+        max_distance = np.max(distances)
+        similarities = 100 * (1 - distances / max_distance)
+
+        sorted_item_images = [(similarity, self.item_images[idx]) 
+                            for similarity, idx in zip(similarities.flatten(), indices.flatten())]
+
+        # Sort by similarity in descending order
+        sorted_item_images.sort(key=lambda x: x[0], reverse=True)
 
         return sorted_item_images
     
