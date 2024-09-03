@@ -35,7 +35,7 @@ class ImageSorter:
         """
         reference_embedding = np.array(reference_embedding).reshape(1, -1)
         distances, indices = self.nearest_neighbors.kneighbors(reference_embedding)
-        sorted_item_images = [self.item_images[idx] for idx in indices.flatten()]
+        sorted_item_images = [(distance,self.item_images[idx]) for distance,idx in zip(distances.flatten(),indices.flatten())]
 
         return sorted_item_images
     
