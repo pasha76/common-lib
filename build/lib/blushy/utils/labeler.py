@@ -93,6 +93,8 @@ class Labeler:
     
     def label_the_clothe_type(self,image_source,ai_clothe_type):
         label_as_dicts=self.label(image_source)
+        if not label_as_dicts:
+            return None
         for label_as_dict in label_as_dicts:
             if label_as_dict["type"]==ai_clothe_type:
                 return label_as_dict
