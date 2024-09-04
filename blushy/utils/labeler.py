@@ -12,7 +12,9 @@ PATH= "/users/tolgagunduz/downloads/checkpoints/moondream-ft"
 if env.is_remote():
     PATH= "/volumes/model-weights/model-weigths/moondream-ft"
 
-    
+
+ 
+
 
 
 class Labeler:
@@ -89,7 +91,16 @@ class Labeler:
         if isinstance(image_source, str):
             image_source = url_to_pil_image(image_source)
         xml_description=self._image_to_xml(image_source)
-        return self._parse_xml_to_dict(xml_description)
+        xml_descriptions = self._parse_xml_to_dict(xml_description)
+        if not xml_descriptions:
+            return None
+        for xml_description in xml_descriptions:
+            description = xml_description["description"]
+            type_ = xml_description["type"]
+            color = xml_description["color"]
+            style = xml_description["style"]
+            xml_description["description"] = f"color: {color}, type: {type_}, style: {style}, description: {description}"
+        return xml_descriptions
     
     def label_the_clothe_type(self,image_source,ai_clothe_type):
         label_as_dicts=self.label(image_source)

@@ -14,9 +14,6 @@ blushy/db/models/clicked_item.py
 blushy/db/models/clothe_type.py
 blushy/db/models/country.py
 blushy/db/models/currency.py
-blushy/db/models/gender.py
-blushy/db/models/google_clothe_type.py
-blushy/db/models/image_label.py
 blushy/db/models/item.py
 blushy/db/models/item_image.py
 blushy/db/models/label.py
@@ -25,7 +22,6 @@ blushy/db/models/master_color.py
 blushy/db/models/master_gender.py
 blushy/db/models/master_status.py
 blushy/db/models/master_stye.py
-blushy/db/models/master_sub_clothe_type.py
 blushy/db/models/post.py
 blushy/db/models/seen_post.py
 blushy/db/models/session.py

@@ -15,9 +15,9 @@ class TextSimilarity:
         self.device = device
         if env.is_remote():
             cache_path= "/volumes/model-weights/model-weigths/"
-            self.model = SentenceTransformer(model_name, clean_up_tokenization_spaces=True, device=self.device, cache_folder=cache_path)
+            self.model = SentenceTransformer(model_name,  device=self.device, cache_folder=cache_path)
         else:
-            self.model = SentenceTransformer(model_name, clean_up_tokenization_spaces=True, device=self.device)
+            self.model = SentenceTransformer(model_name, device=self.device)
 
     def encode_text(self, text):
         """

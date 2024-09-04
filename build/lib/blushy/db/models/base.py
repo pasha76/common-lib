@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 # Base class for all models
 Base = declarative_base()
 
-def init_db(engine_url="mysql+pymysql://root:tolga1194031@35.184.196.46/blushydb" ):
+def init_db(engine_url="mysql+pymysql://root:tolga1194031@35.184.196.46/blushyv2" ):
     """
     Initializes the database connection and returns a sessionmaker instance.
     
