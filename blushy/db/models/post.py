@@ -65,6 +65,6 @@ class Post(Base):
     visited_posts = relationship('VisitPost', back_populates='post')    
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
+    def to_dict(self,ignore_keys=[]):
         return {c.key: getattr(self, c.key)
-                for c in inspect(self).mapper.column_attrs}
+                for c in inspect(self).mapper.column_attrs if c.key not in ignore_keys}
