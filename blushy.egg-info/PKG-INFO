@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: blushy
-Version: 0.2.1
+Version: 0.2.2
 Summary: A utility package for common functionalities
 Author: Tolga Gunduz
 Author-email: tolga@blushy.app
@@ -24,3 +24,4 @@ Requires-Dist: numpy
 Requires-Dist: sentence-transformers
 Requires-Dist: google-cloud
 Requires-Dist: google-cloud-storage
+Requires-Dist: imagehash

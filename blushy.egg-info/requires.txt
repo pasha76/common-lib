@@ -14,3 +14,4 @@ numpy
 sentence-transformers
 google-cloud
 google-cloud-storage
+imagehash
