@@ -90,24 +90,32 @@ class Labeler:
     def label(self, image_source):
         if isinstance(image_source, str):
             image_source = url_to_pil_image(image_source)
-        xml_description=self._image_to_xml(image_source)
+        xml_description = self._image_to_xml(image_source)
+        
         xml_descriptions = self._parse_xml_to_dict(xml_description)
         if not xml_descriptions:
             return None
+        updated_descriptions = []
         for xml_description in xml_descriptions:
             description = xml_description["description"]
             type_ = xml_description["type"]
             color = xml_description["color"]
             style = xml_description["style"]
-            xml_description["description"] = f"color: {color}, type: {type_}, style: {style}, description: {description}"
-        return xml_descriptions
+            updated_description = {
+                "description": f"color: {color}, type: {type_}, style: {style}, description: {description}",
+                "color": color,
+                "type": type_,
+                "style": style
+            }
+            updated_descriptions.append(updated_description)
+        return updated_descriptions
     
-    def label_the_clothe_type(self,image_source,ai_clothe_type):
+    def label_the_clothe_type(self,image_source,ai_clothe_type_name):
         label_as_dicts=self.label(image_source)
         if not label_as_dicts:
             return None
         for label_as_dict in label_as_dicts:
-            if label_as_dict["type"]==ai_clothe_type:
+            if label_as_dict["type"]==ai_clothe_type_name:
                 return label_as_dict
         return None
     

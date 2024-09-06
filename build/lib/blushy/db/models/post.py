@@ -3,32 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
-
-
-class FavoritedPost(Base):
-    __tablename__ = 'favorited_posts'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False,index=True)
-    user=relationship('User', back_populates='favorited_posts')
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False,index=True)
-    post=relationship('Post', back_populates='favorited_posts')
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class SavedPost(Base):
-    __tablename__ = 'saved_posts'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False,index=True)
-    user=relationship('User', back_populates='saved_posts')
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False,index=True)
-    post=relationship('Post', back_populates='saved_posts')
-    created_at = Column(DateTime, default=datetime.utcnow) 
-    
-
-class PostStatus(Base):
-    __tablename__ = 'post_statuses'
-    id = Column(Integer, primary_key=True)
-    title = Column(String(100), unique=True, nullable=False)
-    posts = relationship('Post', back_populates='post_status')
     
 class Post(Base):
     __tablename__ = 'posts'
@@ -38,15 +12,11 @@ class Post(Base):
     instagram_post_url = Column(String(500), unique=False, nullable=True)
     enhanced_image_url = Column(String(500), unique=False, nullable=True)
     instagram_post_id = Column(String(50), unique=True, nullable=True, index=True)
-    _public_image_url = Column('public_image_url', String(500), nullable=True) 
-    no_bg_public_image_url = Column(String(500), nullable=True) 
+    public_image_url = Column('public_image_url', String(500), nullable=True) 
     description = Column(String(5000), nullable=True)
-    quality_score = Column(Float,  nullable=False)
-    similarity_score = Column(Float,  nullable=False)
     image_embedding = Column(Text, nullable=True)  
     master_gender_id = Column(Integer, ForeignKey('master_genders.id'))  # Correct ForeignKey
     master_gender = relationship('MasterGender', back_populates='posts')
-    post_scope=Column(Integer, nullable=True)
     like_count = Column(Integer,  nullable=True,default=0)
     visit_count = Column(Integer,  nullable=True,default=0)
     sales_count = Column(Integer,  nullable=True,default=0)

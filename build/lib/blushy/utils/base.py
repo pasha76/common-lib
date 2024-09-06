@@ -2,12 +2,28 @@ import requests
 from PIL import Image as PILImage
 from io import BytesIO
 import json
+import imagehash
+import hashlib
+import urllib3
+
+
+# Disable SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def url_to_pil_image(url):
-    response = requests.get(url)
-    img = PILImage.open(BytesIO(response.content))
-    
-    return img
+    response = requests.get(url, verify=False)
+    response.raise_for_status()
+    return PILImage.open(BytesIO(response.content))
+
+def image_to_hash(image):
+    return str(imagehash.phash(image))
+
+def text_to_hash(unique_string):
+    hash_object = hashlib.sha256(unique_string.encode())
+    return hash_object.hexdigest()
+
+
+
 
 
 def deserialize_embedding(embedding_str):

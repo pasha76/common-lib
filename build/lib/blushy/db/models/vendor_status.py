@@ -11,5 +11,4 @@ class VendorStatus(Base):
 
     vendor_id = Column(Integer, ForeignKey('vendors.id')) 
     vendor = relationship('Vendor', back_populates='vendor_statuses')
-    items = relationship('Item', back_populates='vendor_status')
 

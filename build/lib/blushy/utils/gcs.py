@@ -2,6 +2,7 @@ import requests
 from google.cloud import storage
 import hashlib
 from PIL import Image as PILImage
+from blushy.utils.base import url_to_pil_image
 import io
 import os
 import certifi
@@ -10,9 +11,10 @@ import numpy as np
 
 
 class GCSUploader:
-    def __init__(self, bucket_name):
+    def __init__(self, creds_path,bucket_name):
         self.bucket_name = bucket_name
-        self.storage_client = storage.Client()
+        self.storage_client = storage.Client.from_service_account_json(creds_path)
+        
         self.bucket = self.storage_client.bucket(bucket_name)
         
     def convert_to_sha256(self,string):
@@ -23,19 +25,7 @@ class GCSUploader:
     def upload_image(self, image):
         """Fetches an image from a URL and uploads it to the bucket."""
         if type(image) is str:
-            response = requests.get(image,verify=False)
-            if response.status_code == 200:
-                destination_blob_name=self.convert_to_sha256(image)
-                blob = self.bucket.blob(destination_blob_name+".jpg")
-                
-                # Upload the image content
-                blob.upload_from_string(response.content, content_type=response.headers['Content-Type'])
-                
-                # Make the blob publicly viewable
-                #blob.make_public()
-                
-                # Return the public URL
-                return blob.public_url
+            image=url_to_pil_image(image)
             
         if isinstance(image, PILImage.Image):
             if image.mode == 'RGBA':
@@ -55,7 +45,7 @@ class GCSUploader:
             
             # Make the blob publicly viewable
             blob.make_public()
-            
+           
             # Return the public URL
             return blob.public_url
             

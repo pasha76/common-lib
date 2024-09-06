@@ -22,6 +22,9 @@ class SiglipManager:
             self.processor = AutoProcessor.from_pretrained(model_name)
 
 
+    def encode_image(self,image_source):
+        return self.get_embeddings(image_source)
+        
     def get_embeddings(self,image_source):
         if isinstance(image_source,str):
             image_source = url_to_pil_image(image_source)

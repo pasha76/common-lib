@@ -8,10 +8,11 @@ from sqlalchemy import inspect
 class MasterGender(Base):
     __tablename__ = 'master_genders'
     id = Column(Integer, primary_key=True)
-    title = Column(String(10), unique=True, nullable=False)
+    name = Column(String(10), unique=True, nullable=False)
 
-    genders = relationship('Gender', back_populates='master_genders')
     users = relationship('User', back_populates='master_gender')
     posts=relationship('Post', back_populates="master_gender")
+    items=relationship('Item', back_populates="master_gender")
+    
 
 

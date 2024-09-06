@@ -4,9 +4,9 @@ from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
 
-class MasterStyle(Base):
-    __tablename__ = 'master_styles'
+
+class PostStatus(Base):
+    __tablename__ = 'post_statuses'
     id = Column(Integer, primary_key=True)
-    name = Column(String(100), unique=True, nullable=False)
-    post_labels = relationship('Label', back_populates='master_style')
-    images = relationship('ItemImage', back_populates='master_style')
+    title = Column(String(100), unique=True, nullable=False)
+    posts = relationship('Post', back_populates='post_status')
