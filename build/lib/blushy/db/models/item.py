@@ -1,4 +1,3 @@
-from tkinter import EXCEPTION
 from sqlalchemy import Column, Integer, String, ForeignKey,DateTime,Float,Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
