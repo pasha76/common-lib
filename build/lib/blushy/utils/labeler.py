@@ -102,7 +102,7 @@ class Labeler:
             color = xml_description["color"]
             style = xml_description["style"]
             updated_description = {
-                "description": f"color: {color}, type: {type_}, style: {style}, description: {description}",
+                "description": f"{description} color: {color}, type: {type_}, style: {style}",
                 "color": color,
                 "type": type_,
                 "style": style

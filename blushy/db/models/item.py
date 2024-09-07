@@ -10,7 +10,8 @@ from blushy.utils.text_similarity_manager import TextSimilarity
 from blushy.utils.gcs import GCSUploader
 import imagehash,hashlib
 import enum
-from blushy.utils.base import url_to_pil_image
+from blushy.utils.base import url_to_pil_image,serialize_embedding
+import json
 
 class ItemStatus(enum.Enum):
     DOWNLOADED = 1
@@ -104,7 +105,7 @@ class Item(Base):
             case ItemStatus.TITLE_CLASSIFIED:
                 if self.master_status_id != ItemStatus.CREATED_IMAGE_DESCRIPTION.value:
                     return False
-                return self.title and self.price > 0 and self.item_id and self.link 
+                return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type
 
             case ItemStatus.CREATED_IMAGE_DESCRIPTION:
                 if self.master_status_id != ItemStatus.ENCODED_IMAGE.value:
@@ -123,18 +124,20 @@ class Item(Base):
             
 
             case ItemStatus.ENCODED_DESCRIPTION:
-                if self.master_status_id != ItemStatus.CREATED_IMAGE_DESCRIPTION.value:
+               
+                if self.master_status_id != ItemStatus.TITLE_CLASSIFIED.value:
                     return False
                 
                 if self.text_embedding is None:
                     return False
-                return self.title and self.price > 0 and self.item_id and self.link
+                return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type and self.text_embedding
 
             case ItemStatus.UPLOADED_TO_VECTORDB:
                 if self.master_status_id != ItemStatus.ENCODED_DESCRIPTION.value:
                     return False
             
-                return self.title and self.price > 0 and self.item_id and self.link
+                return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type and self.text_embedding
+
 
             case ItemStatus.READY:
                 if self.master_status_id != ItemStatus.UPLOADED_TO_VECTORDB.value:
@@ -158,24 +161,26 @@ class Item(Base):
         ids=[]
         metadatas=[]
         vectors=[]
-        for image in self.images:
-            metadata = {
-                "item_id":self.item_id,
-                "price":self.price,
-                "sale_price":self.sale_price,
-                "vendor_id":self.vendor_id,
-                "vendor_name":self.vendor.name,
-                "vendor_link":self.vendor.logo,
-                "master_gender_id":self.master_gender_id,
-                "country_id":self.vendor.country_id,
-                "master_color_id":image.master_color_id,
-                "master_style_id":image.master_style_id,
-                "image_url":image.image_url,
-                "item_url":self.link,
-            }
-            ids.append(image.id)
-            metadatas.append(metadata)
-            vectors.append(image.text_embedding)
+        metadata = {
+            "item_hash":self.item_hash,
+            "price":self.price,
+            "sale_price":self.sale_price,
+            "vendor_id":self.vendor_id,
+            "vendor_name":self.vendor.name,
+            "vendor_link":self.vendor.logo,
+            "master_gender_id":self.master_gender_id,
+            "country_id":self.vendor.country_id,
+            "master_color_id":self.master_color_id,
+            "master_style_id":self.master_style_id,
+            "image_url":self.image_url,
+            "item_url":self.link,
+            "master_gender_id":self.master_gender_id,
+            "master_clothe_type_id":self.ai_clothe_type.master_clothe_type_id,
+            "image_embedding":self.image_embedding,
+        }
+        ids.append(self.id)
+        metadatas.append(metadata)
+        vectors.append(json.loads(self.text_embedding))
         vector_db.upsert_vectors(ids,vectors,metadatas)
 
     def expire(self,vector_db):
@@ -199,7 +204,7 @@ class Item(Base):
         return descriptions
 
     def encode_description(self,text_encoder:TextSimilarity):
-        encoded_description=text_encoder.encode_text(self.description)
+        encoded_description=text_encoder.encode_text(self.image_description)
         self.text_embedding=encoded_description
         return encoded_description
 
@@ -212,24 +217,35 @@ class Item(Base):
 
     @staticmethod
     def list_all_downloaded_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.DOWNLOADED.value).all()
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.DOWNLOADED.value,
+                                          Item.url.isnot(None)).all()
     
     @staticmethod
     def list_all_uploaded_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.UPLOADED_TO_STORAGE.value).all()
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.UPLOADED_TO_STORAGE.value,
+                                          Item.image_url.isnot(None)).all()
     
     @staticmethod
     def list_all_encoded_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_IMAGE.value).all()
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_IMAGE.value,
+                                          Item.image_embedding.isnot(None)).all()
+    
+    @staticmethod
+    def list_all_labeled_items(session):
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.CREATED_IMAGE_DESCRIPTION.value,
+                                          Item.blushy_clothe_type.isnot(None)).all()
+
 
     @staticmethod
     def list_all_classified_title_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value).all()
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value,
+                                          Item.ai_clothe_type_id.isnot(None),
+                                          Item.image_description.isnot(None)).all()
 
-    @staticmethod
-    def list_all_labeled_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.CREATED_IMAGE_DESCRIPTION.value,Item.blushy_clothe_type.isnot(None)).all()
-    
+        
     @staticmethod
     def list_all_encoded_description_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value).all()
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value,
+                                          Item.ai_clothe_type_id.isnot(None),
+                                          Item.image_description.isnot(None)).all()
+                                          
