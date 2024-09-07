@@ -238,7 +238,7 @@ class Item(Base):
 
     @staticmethod
     def list_all_classified_title_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value,
+        return session.query(Item).filter((Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value)|(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
                                           Item.ai_clothe_type_id.isnot(None),
                                           Item.image_description.isnot(None)).all()
 
