@@ -10,7 +10,6 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False,index=True)
     user=relationship('User', back_populates='posts')
     instagram_post_url = Column(String(500), unique=False, nullable=True)
-    enhanced_image_url = Column(String(500), unique=False, nullable=True)
     instagram_post_id = Column(String(50), unique=True, nullable=True, index=True)
     public_image_url = Column('public_image_url', String(500), nullable=True) 
     description = Column(String(5000), nullable=True)

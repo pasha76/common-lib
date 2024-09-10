@@ -37,7 +37,7 @@ blushy/utils/__init__.py
 blushy/utils/base.py
 blushy/utils/cache_manager.py
 blushy/utils/gcs.py
-blushy/utils/image_sorter.py
+blushy/utils/instagramapi.py
 blushy/utils/labeler.py
 blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py

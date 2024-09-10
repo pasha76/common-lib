@@ -8,7 +8,6 @@ from blushy.utils.siglip_manager import SiglipManager
 from blushy.utils.labeler import Labeler
 from blushy.utils.text_similarity_manager import TextSimilarity
 from blushy.utils.gcs import GCSUploader
-import imagehash,hashlib
 import enum
 from blushy.utils.base import url_to_pil_image,serialize_embedding
 import json
@@ -24,6 +23,10 @@ class ItemStatus(enum.Enum):
     READY = 8
     EXPIRED = 9
     EXCEPTION_NOT_LABELED = 10
+    EXCEPTION_TITLE_CLASSIFIED=11
+    EXCEPTION_ENCODED_DESCRIPTION=12
+    EXCEPTION_UPLOADED_TO_STORAGE=13
+    EXCEPTION_VECTORDB=14
 
 class Item(Base):
     __tablename__ = 'items'
@@ -106,6 +109,12 @@ class Item(Base):
                 if self.master_status_id != ItemStatus.CREATED_IMAGE_DESCRIPTION.value:
                     return False
                 return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type
+            
+            case ItemStatus.EXCEPTION_TITLE_CLASSIFIED:
+                if self.master_status_id != ItemStatus.CREATED_IMAGE_DESCRIPTION.value:
+                    return False
+                return self.title and self.price > 0 and self.item_id and self.link and self.image_embedding
+
 
             case ItemStatus.CREATED_IMAGE_DESCRIPTION:
                 if self.master_status_id != ItemStatus.ENCODED_IMAGE.value:
@@ -124,7 +133,7 @@ class Item(Base):
             
 
             case ItemStatus.ENCODED_DESCRIPTION:
-               
+            
                 if self.master_status_id != ItemStatus.TITLE_CLASSIFIED.value:
                     return False
                 
@@ -132,11 +141,39 @@ class Item(Base):
                     return False
                 return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type and self.text_embedding
 
+            case ItemStatus.EXCEPTION_ENCODED_DESCRIPTION:
+            
+                if self.master_status_id != ItemStatus.TITLE_CLASSIFIED.value:
+                    return False
+                
+                return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type
+
+
             case ItemStatus.UPLOADED_TO_VECTORDB:
                 if self.master_status_id != ItemStatus.ENCODED_DESCRIPTION.value:
                     return False
             
-                return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type and self.text_embedding
+                return (self.title and 
+                        self.price > 0 and
+                          self.item_id and 
+                          self.link and 
+                          self.ai_clothe_type_id and 
+                          self.image_description and 
+                          self.blushy_clothe_type and 
+                          self.text_embedding)
+            
+            case ItemStatus.EXCEPTION_VECTORDB:
+                if self.master_status_id != ItemStatus.ENCODED_DESCRIPTION.value:
+                    return False
+            
+                return (self.title and 
+                        self.price > 0 and
+                          self.item_id and 
+                          self.link and 
+                          self.ai_clothe_type_id and 
+                          self.image_description and 
+                          self.blushy_clothe_type and 
+                          self.text_embedding)
 
 
             case ItemStatus.READY:
@@ -238,7 +275,7 @@ class Item(Base):
 
     @staticmethod
     def list_all_classified_title_items(session):
-        return session.query(Item).filter((Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value)|(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
+        return session.query(Item).filter(Item._master_status_id == ItemStatus.TITLE_CLASSIFIED.value,
                                           Item.ai_clothe_type_id.isnot(None),
                                           Item.image_description.isnot(None)).all()
 
@@ -247,5 +284,7 @@ class Item(Base):
     def list_all_encoded_description_items(session):
         return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value,
                                           Item.ai_clothe_type_id.isnot(None),
+                                          Item.text_embedding.isnot(None),
+                                          Item.blushy_clothe_type.isnot(None),
                                           Item.image_description.isnot(None)).all()
                                           
