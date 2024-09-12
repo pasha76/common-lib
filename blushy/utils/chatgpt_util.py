@@ -12,23 +12,25 @@ class Clothe(BaseModel):
     shape_and_fit: str
     occasion: str
 
+    def to_dict(self):
+        return {
+            "clothe_type": self.clothe_type,
+            "detailed_description": self.detailed_description,
+            "style": self.style,
+            "color": self.color,
+            "pattern": self.pattern,
+            "fabric_type": self.fabric_type,
+            "shape_and_fit": self.shape_and_fit,
+            "occasion": self.occasion
+        }
+
 
 class Clothes(BaseModel):
     clothes: list[Clothe]
 
     def to_dict(self):
-        cc=[]
-        for c in self.clothes:
-            d={"clothe_type":c.clothe_type,
-               "detailed_description":c.detailed_description,
-               "style":c.style,
-               "color":c.color,
-               "pattern":c.pattern,
-               "fabric_type":c.fabric_type,
-               "shape_and_fit":c.shape_and_fit,
-               "occasion":c.occasion}
-            cc.append(d)
-        return cc
+        return {"clothes": [clothe.to_dict() for clothe in self.clothes]}
+   
 
 
 def analyze_image_by_chatgpt_json(messages,max_tokens=1000):
