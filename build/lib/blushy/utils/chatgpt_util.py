@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from openai import OpenAI
+import os
 
 class Clothe(BaseModel):
     clothe_type: str
@@ -17,7 +18,8 @@ class Clothes(BaseModel):
 
 
 def analyze_image_by_chatgpt_json(messages,max_tokens=1000):
-    api_key = "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"
+
+    api_key=os.environ["CHATGPT_API_KEY"]
     client = OpenAI(api_key=api_key)
     completion = client.beta.chat.completions.parse(
         model="gpt-4o-2024-08-06",
