@@ -43,6 +43,36 @@ class User(Base):
     saved_posts=relationship('SavedPost', back_populates='user')
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    def calculate_fashion_score(self):
+        if not self.posts:
+            return 0
+
+        total_posts = len(self.posts)
+        total_visits = sum(post.visit_count for post in self.posts)
+        total_favorites = sum(len(post.favorited_posts) for post in self.posts)
+        total_sales = sum(post.sales_count for post in self.posts)
+
+        # Calculate weighted score
+        post_weight = 1
+        visit_weight = 0.5
+        favorite_weight = 2
+        sale_weight = 5
+
+        weighted_score = (
+            total_posts * post_weight +
+            total_visits * visit_weight +
+            total_favorites * favorite_weight +
+            total_sales * sale_weight
+        )
+
+        # Normalize score (0-10 range)
+        max_score = 1000  # Adjust this value based on your expectations
+        normalized_score = min(round((weighted_score / max_score) * 10, 1), 10)
+
+        # Update the user's fashion_score
+        self.fashion_score = normalized_score
+        return normalized_score
+
     def is_vendor(self):
         return self.vendor_id is not None
 
