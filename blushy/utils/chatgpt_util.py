@@ -11,7 +11,7 @@ class Clothe(BaseModel):
     fabric_type: str
     shape_and_fit: str
     occasion: str
-    bbox: tuple[float, float, float, float]
+
 
 class Clothes(BaseModel):
     clothes: list[Clothe]
@@ -47,7 +47,7 @@ def describe_image_by_chatgpt(image_url: str):
     
     Structure your output as a JSON object, with each clothing type being a key.
     
-    Format your response like this:
+    Format your as JSON response like this:
     
     [
         {{
@@ -58,8 +58,7 @@ def describe_image_by_chatgpt(image_url: str):
             "pattern": "<pattern of the clothing item>",
             "fabric_type": "<type of fabric>",
             "shape_and_fit": "<shape and fit of the clothing item>",
-            "occasion": "<appropriate occasions>",
-            "bbox": [<x1>, <y1>, <x2>, <y2>]
+            "occasion": "<appropriate occasions>"
         }},
         ...
     ]
@@ -78,4 +77,6 @@ def describe_image_by_chatgpt(image_url: str):
                         {"type": "image_url", "image_url": {"url": image_url}}]
         }
     ])
+
+    print(res)
     return res
