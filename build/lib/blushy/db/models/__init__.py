@@ -25,6 +25,7 @@ from blushy.db.models.post_status import PostStatus
 from blushy.db.models.favorite_post import FavoritedPost
 from blushy.db.models.saved_post import SavedPost
 from blushy.db.models.label import Label
+from blushy.db.models.dataset import Dataset
 from blushy.db.models.item import ItemStatus
 
 

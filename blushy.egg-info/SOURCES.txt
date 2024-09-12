@@ -13,6 +13,7 @@ blushy/db/models/base.py
 blushy/db/models/clicked_item.py
 blushy/db/models/country.py
 blushy/db/models/currency.py
+blushy/db/models/dataset.py
 blushy/db/models/favorite_post.py
 blushy/db/models/item.py
 blushy/db/models/label.py
