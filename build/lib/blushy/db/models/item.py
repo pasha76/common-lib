@@ -88,6 +88,7 @@ class Item(Base):
     def _validate_item_data(self,value):
         match value:
             case ItemStatus.DOWNLOADED:
+                print(self.title , self.price , self.item_id , self.link , self.master_gender_id , self.vendor_id )
                 return self.title and self.price > 0 and self.item_id and self.link and self.master_gender_id is not None and self.vendor_id is not None
             
             case ItemStatus.UPLOADED_TO_STORAGE:

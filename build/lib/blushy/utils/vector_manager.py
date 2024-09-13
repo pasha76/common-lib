@@ -9,10 +9,17 @@ class VectorManager:
     def __init__(self,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
         url= os.getenv('QDRANT_URL')
         api_key= os.getenv('QDRANT_API_KEY')
-        self.client = QdrantClient(url=url,api_key=api_key)
+        self.client = QdrantClient(url=url,api_key=api_key,timeout=10)
         self.collection_name = collection_name
         self.vector_size = vector_size
         self.distance = distance
+
+
+    def create_index(self,collection_name,field_name,field_schema):
+        self.client.create_payload_index(
+                collection_name=collection_name,
+                field_name=field_name,
+                field_schema=field_schema)
 
     def recreate_collection(self):
         self.client.recreate_collection(
