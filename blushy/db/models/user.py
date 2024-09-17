@@ -42,6 +42,7 @@ class User(Base):
     favorited_posts=relationship('FavoritedPost', back_populates='user')
     saved_posts=relationship('SavedPost', back_populates='user')
     created_at = Column(DateTime, default=datetime.utcnow)
+    comments=relationship('Comment', back_populates='user')
 
     def calculate_fashion_score(self):
         if not self.posts:

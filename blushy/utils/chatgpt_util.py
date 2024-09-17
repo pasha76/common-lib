@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from openai import OpenAI
 import os
+from typing import List
 
 class Clothe(BaseModel):
     clothe_type: str
@@ -10,7 +11,15 @@ class Clothe(BaseModel):
     pattern: str
     fabric_type: str
     shape_and_fit: str
+    fit_type: str
+    seasonality: str
+    weather_appropriateness: str
+    color_family: str
     occasion: str
+    occasion_type: str
+    fashion_trends: str
+    pose_and_movement: str
+    unique_features: str
 
     def to_dict(self):
         return {
@@ -21,121 +30,150 @@ class Clothe(BaseModel):
             "pattern": self.pattern,
             "fabric_type": self.fabric_type,
             "shape_and_fit": self.shape_and_fit,
-            "occasion": self.occasion
+            "fit_type": self.fit_type,
+            "seasonality": self.seasonality,
+            "weather_appropriateness": self.weather_appropriateness,
+            "color_family": self.color_family,
+            "occasion": self.occasion,
+            "occasion_type": self.occasion_type,
+            "fashion_trends": self.fashion_trends,
+            "pose_and_movement": self.pose_and_movement,
+            "unique_features": self.unique_features
         }
 
-
 class Clothes(BaseModel):
-    clothes: list[Clothe]
+    clothes: List[Clothe]
 
     def to_dict(self):
         return {"clothes": [clothe.to_dict() for clothe in self.clothes]}
-   
 
 
-def analyze_image_by_chatgpt_json(messages,max_tokens=1000):
-
-    api_key=os.environ["CHATGPT_API_KEY"]
+def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
+    # Setting up OpenAI API client
+    api_key = os.environ["CHATGPT_API_KEY"]
     client = OpenAI(api_key=api_key)
+
+    # Calling GPT to get the detailed description
     completion = client.beta.chat.completions.parse(
         model="gpt-4o-mini",
         messages=messages,
         max_tokens=max_tokens,
         response_format=Clothes,
     )
+    
+    # Returning the parsed clothes descriptions
     return completion.choices[0].message.parsed.clothes
 
 
 def describe_image_by_chatgpt(image_url: str):
+    # Define the improved prompt
     prompt = f"""
     
-    You are tasked with describing the clothing items in a photo for an e-commerce platform. The goal is to provide extreme detail about each visible clothing item including glasses,shoes and bags to make it easily searchable. Focus on the following aspects:
+    You are tasked with describing the visible clothing items and accessories (including glasses, shoes, and bags) in a photo for an e-commerce platform. The goal is to provide extremely detailed descriptions of each visible item. Your descriptions should be specific, capturing any unique features, design elements, and distinct details that differentiate these items from similar products. Focus on the following aspects:
+    
+    1. **Clothing Type**: Identify and name only the visible clothing items and accessories. For example: "Maxi Dress", "Aviator Sunglasses", "Sneakers", "Crossbody Bag", etc.
+    2. **Detailed Description**: Write a comprehensive description that could be used for an e-commerce listing. Include key details such as the cut, shape, fit, any special features (e.g., ruffles, embroidery, zippers, etc.), and pose-related details (e.g., how the clothing drapes or fits in the image, such as a billowing skirt or snug jacket). This description should include a minimum of 75 words.
+    3. **Style**: Classify the overall style of the item (e.g., casual, formal, sporty, elegant, vintage, streetwear, etc.). Describe any fashion trends or design influences.
+    4. **Color**: Identify the dominant and any secondary colors. If the item has a distinct color contrast, gradient, or color-blocking, include those details.
+    5. **Pattern**: Mention any visible patterns (e.g., stripes, florals, animal print, graphics, geometric designs, etc.), or specify if the item is solid.
+    6. **Fabric Type**: Identify the fabric or material (e.g., cotton, leather, denim, silk, polyester). If the texture is visible (e.g., ribbed, smooth, quilted), describe it.
+    7. **Shape and Fit**: Specify the item's silhouette (e.g., fitted, oversized, A-line, cropped) and the type of fit (e.g., slim, loose, tailored). If accessories like belts or ties adjust the fit, mention them.
+    8. **Fit Type**: Provide specific fit types like "Slim", "Relaxed", or "Skinny".
+    9. **Seasonality**: Describe the season this item is most appropriate for (e.g., Summer, Winter).
+    10. **Weather Appropriateness**: Suggest the type of weather the item is suited for (e.g., Rainy, Cold Weather).
+    11. **Color Family**: Categorize the colors into broader families (e.g., Neutrals, Brights).
+    12. **Occasion**: Suggest appropriate occasions for wearing the item (e.g., casual, business, party, athletic).
+    13. **Occasion Type**: Describe specific occasion types like "Beach Vacation", "Weddings", etc.
+    14. **Fashion Trends**: Identify any specific fashion trends the item fits into (e.g., Y2K, Streetwear).
+    15. **Pose and Movement**: If relevant, describe how the item is worn or displayed in the image (e.g., how a dress flows, how shoes fit, or the way glasses are perched on the nose).
+    16. **Unique Features**: Highlight any standout details that make the item unique, such as embellishments, fastenings, stitching, or specific cuts (e.g., asymmetrical hems, double-breasted jackets, statement sleeves).
+   
 
-    - **Clothing Type**: Identify and describe only the visible clothing items that fit into the types provided below.
-    - **Detailed Description**: Write a detailed description similar to what you would find in an e-commerce store. Include features such as the type of fit (slim, regular, loose), key design elements, and any other unique features. Minimum 50 words.
-    - **Style**: Describe the overall style of the clothing item (e.g., casual, formal, sporty, streetwear, etc.).
-    - **Color**: Identify the dominant color, and any secondary colors, if applicable.
-    - **Pattern**: Mention any patterns such as stripes, checks, florals, graphics, etc.
-    - **Fabric Type**: Describe the material of the item (e.g., cotton, denim, leather, polyester).
-    - **Shape and Fit**: Describe the silhouette (e.g., fitted, oversized, A-line, straight-leg, etc.) and fit (e.g., slim, relaxed, tight, etc.).
-    - **Occasion**: Suggest appropriate occasions to wear the clothing item (e.g., casual, business, evening, etc.).
-    - **Bounding Box (BBox)**: Include the coordinates of the bounding box where the clothing item appears in the image, formatted as [x1, y1, x2, y2].
+    Example output:
 
-    example output:
     [
     {{
-        "clothe_type": "Denim Shirt",
-        "detailed_description": "This button-up denim shirt features an oversized fit that offers both comfort and a stylish silhouette. It has a unique light blue tie-dye wash that adds a modern twist to the classic denim look. The shirt is designed with a deep V-neck collar and long sleeves, making it versatile for layering or wearing alone. Perfect for casual outings or streetwear ensembles, it has a relaxed fit and is crafted from a durable cotton denim fabric.",
-        "style": "Casual",
-        "color": "Light Blue",
-        "pattern": "Tie-dye",
-        "fabric_type": "Cotton Denim",
-        "shape_and_fit": "Oversized, Relaxed Fit",
-        "occasion": "Casual, Streetwear"
+        "clothe_type": "Sunglasses",
+        "detailed_description": "These oversized sunglasses feature a bold frame with a glossy finish that instantly draws attention. The lenses are tinted, providing UV protection while adding an air of mystery. The wide arms of the sunglasses complement the face's shape and provide a stylishly sophisticated look. Perfect for sunny days, they add a trendy flair to any outfit.",
+        "style": "Fashion-forward",
+        "color": "Black with tinted lenses",
+        "pattern": "Solid",
+        "fabric_type": "Plastic frame",
+        "shape_and_fit": "Oversized frame",
+        "fit_type": "Loose",
+        "seasonality": "Summer",
+        "weather_appropriateness": "Sunny days",
+        "color_family": "Neutrals",
+        "occasion": "Outdoor events, casual outings, beach trips",
+        "occasion_type": "Casual wear",
+        "fashion_trends": "Bold fashion",
+        "pose_and_movement": "Perched stylishly on the face, the sunglasses enhance the confident pose of the wearer.",
+        "unique_features": "Oversized frame, tinted lenses"
     }},
     {{
-        "clothe_type": "Denim Jeans",
-        "detailed_description": "These high-waisted denim jeans feature a matching light blue tie-dye pattern that complements the shirt. The jeans are straight-leg, providing a classic silhouette that is both timeless and flattering. They include standard features such as belt loops, a zip fly, and pockets. Made from high-quality cotton denim, these jeans are ideal for casual daywear or an evening out when paired with a stylish top.",
-        "style": "Casual",
-        "color": "Light Blue",
-        "pattern": "Tie-dye",
-        "fabric_type": "Cotton Denim",
-        "shape_and_fit": "Straight-leg, High-waisted",
-        "occasion": "Casual, Daywear"
+        "clothe_type": "Tote Bag",
+        "detailed_description": "A spacious tote bag with a minimalist geometric design in muted tones. The durable canvas with leather trims ensures practicality and style, while the interior features multiple pockets for organization.",
+        "style": "Everyday Classic",
+        "color": "Off-white with tan accents",
+        "pattern": "Geometric",
+        "fabric_type": "Canvas with leather trims",
+        "shape_and_fit": "Spacious tote with shoulder straps",
+        "fit_type": "Relaxed",
+        "seasonality": "All seasons",
+        "weather_appropriateness": "All weather",
+        "color_family": "Neutrals",
+        "occasion": "Casual outings, shopping, travel",
+        "occasion_type": "Everyday wear",
+        "fashion_trends": "Minimalism",
+        "pose_and_movement": "Worn slung over one shoulder for practicality and style.",
+        "unique_features": "Geometric design, multiple interior pockets"
     }},
     {{
-        "clothe_type": "Belt",
-        "detailed_description": "A statement silver belt with an intricate design that complements the denim outfit. The belt adds a touch of sparkle and sophistication to the casual look, enhancing the waistline and tying the outfit together.",
-        "style": "Statement, Casual",
-        "color": "Silver",
-        "pattern": "Textured, Metallic",
-        "fabric_type": "Metal",
-        "shape_and_fit": "Slim, Adjustable Fit",
-        "occasion": "Casual, Streetwear, Evening Wear"
-    }},
-    {{
-        "clothe_type": "Mini Handbag",
-        "detailed_description": "A small, structured metallic handbag with a silver finish, featuring a short handle and minimalistic design. It adds a chic touch to the outfit while being practical for carrying essentials.",
-        "style": "Elegant, Casual",
-        "color": "Silver",
-        "pattern": "Plain, Metallic",
-        "fabric_type": "Leather",
-        "shape_and_fit": "Small, Boxy",
-        "occasion": "Casual, Evening Out"
-    }},
-    {{
-        "clothe_type": "Black Leather Shoes",
-        "detailed_description": "Black leather shoes with a rounded toe, designed in a simple, elegant style that complements the casual denim look. The shoes have a subtle platform, adding height and balance to the outfit without overpowering the overall look.",
-        "style": "Casual, Streetwear",
-        "color": "Black",
-        "pattern": "Plain",
-        "fabric_type": "Leather",
-        "shape_and_fit": "Rounded Toe, Slight Platform",
-        "occasion": "Casual, Daywear, Evening Out"
+        "clothe_type": "Sneakers",
+        "detailed_description": "Metallic gold sneakers with a rounded toe and lace-up front. They feature a cushioned insole for comfort and a sleek design for casual and athletic wear.",
+        "style": "Sporty Casual",
+        "color": "Gold",
+        "pattern": "Solid",
+        "fabric_type": "Synthetic",
+        "shape_and_fit": "Casual fit, cushioned insole",
+        "fit_type": "Relaxed",
+        "seasonality": "All seasons",
+        "weather_appropriateness": "All weather",
+        "color_family": "Metallics",
+        "occasion": "Casual outings, city strolls",
+        "occasion_type": "Everyday wear",
+        "fashion_trends": "Streetwear",
+        "pose_and_movement": "Shown at an angle to highlight comfort and style.",
+        "unique_features": "Metallic gold finish, lace-up front"
     }}
     ]
-    
-    Structure your output as a JSON object, with each clothing type being a key.
-    
-    Format your as JSON response like this:
-    
-    [
+
+    Your response must follow this format, structured as a JSON object:
+        [
         {{
-            "clothe_type": "<standard clothing type>",
-            "detailed_description": "<detailed ecommerce-style description>",
-            "style": "<style of the clothing item>",
+            "clothe_type": "<clothing or accessory type>",
+            "detailed_description": "<detailed e-commerce style description>",
+            "style": "<overall style>",
             "color": "<dominant and secondary colors>",
-            "pattern": "<pattern of the clothing item>",
-            "fabric_type": "<type of fabric>",
-            "shape_and_fit": "<shape and fit of the clothing item>",
-            "occasion": "<appropriate occasions>"
+            "pattern": "<any patterns or designs>",
+            "fabric_type": "<material or fabric type>",
+            "shape_and_fit": "<silhouette and fit>",
+            "fit_type": "<specific fit type (e.g., Skinny, Relaxed)>",
+            "seasonality": "<season (e.g., Summer, Winter)>",
+            "weather_appropriateness": "<weather suitability (e.g., Rainy, Cold Weather)>",
+            "color_family": "<general color family (e.g., Neutrals, Brights)>",
+            "occasion": "<appropriate occasions>",
+            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation)>",
+            "fashion_trends": "<specific fashion trend (e.g., Y2K, Athleisure)>",
+            "pose_and_movement": "<details about how the item is worn or displayed in the image>",
+            "unique_features": "<special features or design elements>"
         }},
         ...
-    ]
+        ]
+        
+        """
 
-    Ensure you only describe visible clothing and accessories in the image and keep the format structured and consistent.
-    """
-
+    # Call the function to analyze the image
     res = analyze_image_by_chatgpt_json(messages=[
         {
             "role": "system",
@@ -147,6 +185,5 @@ def describe_image_by_chatgpt(image_url: str):
                         {"type": "image_url", "image_url": {"url": image_url}}]
         }
     ])
-
 
     return res

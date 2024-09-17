@@ -31,7 +31,8 @@ class Post(Base):
     trendy_week_start=Column(DateTime)
     trendy_week_end =Column(DateTime)
     clicked_items = relationship('ClickedItem', back_populates='post')
-    visited_posts = relationship('VisitPost', back_populates='post')    
+    visited_posts = relationship('VisitPost', back_populates='post')  
+    comments=relationship('Comment', back_populates='post')  
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self,ignore_keys=[]):

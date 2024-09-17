@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.2.11',
+    version='0.2.12',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*"]),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
@@ -22,7 +22,8 @@ setup(
        "google-cloud",
        "google-cloud-storage",
        "imagehash",
-       "openai"
+       "openai",
+       "funcy"
     ],
     include_package_data=True,
     description='A utility package for common functionalities',

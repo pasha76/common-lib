@@ -11,6 +11,7 @@ blushy/db/models/__init__.py
 blushy/db/models/ai_clothe_type.py
 blushy/db/models/base.py
 blushy/db/models/clicked_item.py
+blushy/db/models/comment.py
 blushy/db/models/country.py
 blushy/db/models/currency.py
 blushy/db/models/dataset.py
@@ -44,3 +45,6 @@ blushy/utils/labeler.py
 blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py
 blushy/utils/vector_manager.py
+blushy/utils/pinterest/__init__.py
+blushy/utils/pinterest/config.py
+blushy/utils/pinterest/scraper.py

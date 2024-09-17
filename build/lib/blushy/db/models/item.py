@@ -283,9 +283,10 @@ class Item(Base):
         
     @staticmethod
     def list_all_encoded_description_items(session):
-        return session.query(Item).filter(Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value,
+        return session.query(Item).filter((Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
                                           Item.ai_clothe_type_id.isnot(None),
                                           Item.text_embedding.isnot(None),
                                           Item.blushy_clothe_type.isnot(None),
                                           Item.image_description.isnot(None)).all()
                                           
+                                          #Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value)

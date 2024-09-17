@@ -16,6 +16,7 @@ def get_session():
     
     :return: SQLAlchemy session object.
     """
+    
     session = Session()
     if not session or not session.is_active:
         base.init_db()

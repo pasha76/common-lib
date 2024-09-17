@@ -16,3 +16,4 @@ google-cloud
 google-cloud-storage
 imagehash
 openai
+funcy

@@ -102,7 +102,7 @@ class VectorManager:
             offset=page*limit
         )
 
-    def search_vectors(self, query_vector, filter=None, page=0,limit=20):
+    def search_vectors(self, query_vector, filter=None,page=0,limit=20):
         if filter:
             filters=[]
             for k,v in filter.items():
@@ -113,8 +113,9 @@ class VectorManager:
                         ),
                         
                     ))
+        
             
-            filter=Filter(must=filters)
+        filter=Filter(must=filters)
         result = self.client.search(
             collection_name=self.collection_name,
             query_vector=query_vector,
