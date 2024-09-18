@@ -1,5 +1,5 @@
 
-from qdrant_client.models import PointStruct
+from qdrant_client.models import PointStruct,QueryRequest
 from qdrant_client.models import Distance, VectorParams,MatchValue,Filter,FieldCondition
 from qdrant_client import QdrantClient, models
 from qdrant_client import QdrantClient
@@ -101,6 +101,33 @@ class VectorManager:
             limit=limit,
             offset=page*limit
         )
+    
+    def recommend_by_label(self,query_vectors,filter,page=0,limit=20):
+        filters=[]
+        if filter:
+            for k,v in filter.items():
+                filters.append(FieldCondition(
+                        key=k,
+                        match=MatchValue(
+                            value=v,
+                        ),
+                        
+                    ))
+        
+            
+        filter=None#Filter(must=filters)
+        vector_size = len(query_vectors) or 1
+        limit_count=(limit*2)//vector_size
+        limit_count = limit_count if limit_count*vector_size>=20 else limit_count+1
+        search_queries = [
+            QueryRequest(query=vector, filter=filter, limit=limit_count,offset=page*limit)
+            for vector in query_vectors
+        ]
+
+        self.client.query_batch_points(collection_name=self.collection_name, requests=search_queries)
+
+
+
 
     def search_vectors(self, query_vector, filter=None,page=0,limit=20):
         if filter:

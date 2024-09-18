@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
+import json
 
 
 class Label(Base):
@@ -25,6 +26,20 @@ class Label(Base):
     text_embedding = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
     description = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
 
+
+    def upload_to_vector_db(self,vector_db):
+        ids=[]
+        metadatas=[]
+        vectors=[]
+        metadata = {
+            "post_id":self.post_id,
+            "country_id":self.post.user.country_id,
+            "master_gender_id":self.post.user.master_gender_id
+        }
+        ids.append(self.id)
+        metadatas.append(metadata)
+        vectors.append(json.loads(self.text_embedding))
+        vector_db.upsert_vectors(ids,vectors,metadatas)
 
  
 

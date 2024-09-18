@@ -46,21 +46,18 @@ class SiglipManager:
     def serialize_embedding(self,embedding):
         return json.dumps(embedding.tolist())
     
-    def classify(self,image,labels):
-        if isinstance(labels,str):
-            labels =[labels]
+    def classify(self, image, labels):
+        if isinstance(labels, str):
+            labels = [labels]
         text_descriptions = [f"This is a photo of a {label}" for label in labels]
 
-        inputs = self.processor(text=text_descriptions, images=[image], padding="max_length", return_tensors="pt")
+        inputs = self.processor(text=text_descriptions, images=image, padding=True, return_tensors="pt")
 
         with torch.no_grad():
-            self.model.config.torchscript = False
             results = self.model(**inputs)
 
-        logits_per_image = results['logits_per_image']  # this is the image-text similarity score
-       
-
-        probs = logits_per_image.softmax(dim=1).detach().numpy().astype(float)
+        logits_per_image = results.logits_per_image  # this is the image-text similarity score
+        probs = logits_per_image.softmax(dim=1).cpu().numpy()
         return probs
 
 

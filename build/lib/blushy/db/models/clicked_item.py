@@ -11,6 +11,7 @@ class ClickedItem(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    link = Column(String(800),nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship('User', back_populates='clicked_items')
