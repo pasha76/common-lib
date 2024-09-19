@@ -16,6 +16,7 @@ blushy/db/models/country.py
 blushy/db/models/currency.py
 blushy/db/models/dataset.py
 blushy/db/models/favorite_post.py
+blushy/db/models/invitation.py
 blushy/db/models/item.py
 blushy/db/models/label.py
 blushy/db/models/master_clothe_type.py

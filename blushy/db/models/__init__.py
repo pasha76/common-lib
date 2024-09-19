@@ -28,5 +28,6 @@ from blushy.db.models.label import Label
 from blushy.db.models.dataset import Dataset
 from blushy.db.models.item import ItemStatus
 from blushy.db.models.comment import Comment
+from blushy.db.models.invitation import Invitation
 
 

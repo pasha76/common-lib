@@ -102,36 +102,22 @@ class VectorManager:
             offset=page*limit
         )
     
-    def recommend_by_label(self,query_vectors,filter,page=0,limit=20):
-        filters=[]
-        if filter:
-            for k,v in filter.items():
-                filters.append(FieldCondition(
-                        key=k,
-                        match=MatchValue(
-                            value=v,
-                        ),
-                        
-                    ))
-        
-            
-        filter=None#Filter(must=filters)
-        vector_size = len(query_vectors) or 1
-        limit_count=(limit*2)//vector_size
-        limit_count = limit_count if limit_count*vector_size>=20 else limit_count+1
+    def search_by_batch(self,query_vectors):
         search_queries = [
-            QueryRequest(query=vector, filter=filter, limit=limit_count,offset=page*limit)
-            for vector in query_vectors
+            QueryRequest(query=qv)
+            for qv in query_vectors
         ]
+        print(search_queries)
 
-        self.client.query_batch_points(collection_name=self.collection_name, requests=search_queries)
+        return self.client.query_batch_points(collection_name="labels", requests=search_queries)
 
 
 
 
     def search_vectors(self, query_vector, filter=None,page=0,limit=20):
+        filters=[]
         if filter:
-            filters=[]
+            
             for k,v in filter.items():
                 filters.append(FieldCondition(
                         key=k,

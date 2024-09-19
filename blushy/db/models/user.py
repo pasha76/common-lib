@@ -35,6 +35,8 @@ class User(Base):
     seen_posts=relationship('SeenPost', back_populates='user')
     vendor_id = Column(Integer, ForeignKey('vendors.id'),nullable=True) 
     vendor = relationship('Vendor', back_populates='users')
+    invited_by_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    invited_by = relationship('User', remote_side=[id], backref='invited_users')
 
     user_status_id = Column(Integer, ForeignKey('user_statuses.id')) 
     user_status = relationship('UserStatus', back_populates='users')
@@ -43,6 +45,7 @@ class User(Base):
     saved_posts=relationship('SavedPost', back_populates='user')
     created_at = Column(DateTime, default=datetime.utcnow)
     comments=relationship('Comment', back_populates='user')
+    invitations=relationship('Invitation', back_populates='user')
 
     def calculate_fashion_score(self):
         if not self.posts:
