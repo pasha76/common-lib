@@ -60,6 +60,12 @@ class SiglipManager:
         probs = logits_per_image.softmax(dim=1).cpu().numpy()
         return probs
 
+    def is_human(self,image_source):
+        if isinstance(image_source,str):
+            image_source=url_to_pil_image(image_source)
+
+        classes=self.classify(image_source,["person body with face","clothe without face and body"])[0]
+        return classes[0]>classes[1]
 
     
     
