@@ -7,19 +7,13 @@ class Clothe(BaseModel):
     clothe_type: str
     detailed_description: str
     style: str
-    color: str
+    color: List[str]  # Specify the type of items in the list
     pattern: str
     fabric_type: str
     shape_and_fit: str
-    fit_type: str
-    seasonality: str
-    weather_appropriateness: str
-    color_family: str
-    occasion: str
     occasion_type: str
-    fashion_trends: str
     pose_and_movement: str
-    unique_features: str
+    unique_features: List[str]  # Specify the type of items in the list
 
     def to_dict(self):
         return {
@@ -30,22 +24,17 @@ class Clothe(BaseModel):
             "pattern": self.pattern,
             "fabric_type": self.fabric_type,
             "shape_and_fit": self.shape_and_fit,
-            "fit_type": self.fit_type,
-            "seasonality": self.seasonality,
-            "weather_appropriateness": self.weather_appropriateness,
-            "color_family": self.color_family,
-            "occasion": self.occasion,
             "occasion_type": self.occasion_type,
-            "fashion_trends": self.fashion_trends,
             "pose_and_movement": self.pose_and_movement,
             "unique_features": self.unique_features
         }
 
 class Clothes(BaseModel):
     clothes: List[Clothe]
-
+    
     def to_dict(self):
-        return {"clothes": [clothe.to_dict() for clothe in self.clothes]}
+        return [clothe.to_dict() for clothe in self.clothes]
+
 
 
 def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
@@ -64,8 +53,22 @@ def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
     # Returning the parsed clothes descriptions
     return completion.choices[0].message.parsed.clothes
 
+def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,colors=None):
+    
+    if clothe_types:
+        clothe_types=("|").join(clothe_types)
+    else:
+        clothe_types="<standard clothing or accessory type>"
+    
+    if styles:
+        styles=("|").join(styles)
+    else:
+        styles="<overall style>"
 
-def describe_image_by_chatgpt(image_url: str):
+    if colors:
+        colors=("|").join(colors)
+    else:
+        colors="<dominant and secondary colors>"
     # Define the improved prompt
     prompt = f"""
     
@@ -96,17 +99,12 @@ def describe_image_by_chatgpt(image_url: str):
         "clothe_type": "Sunglasses",
         "detailed_description": "These oversized sunglasses feature a bold frame with a glossy finish that instantly draws attention. The lenses are tinted, providing UV protection while adding an air of mystery. The wide arms of the sunglasses complement the face's shape and provide a stylishly sophisticated look. Perfect for sunny days, they add a trendy flair to any outfit.",
         "style": "Fashion-forward",
-        "color": "Black with tinted lenses",
+        "color": ["Black","white"],
         "pattern": "Solid",
         "fabric_type": "Plastic frame",
         "shape_and_fit": "Oversized frame",
         "fit_type": "Loose",
-        "seasonality": "Summer",
-        "weather_appropriateness": "Sunny days",
-        "color_family": "Neutrals",
-        "occasion": "Outdoor events, casual outings, beach trips",
         "occasion_type": "Casual wear",
-        "fashion_trends": "Bold fashion",
         "pose_and_movement": "Perched stylishly on the face, the sunglasses enhance the confident pose of the wearer.",
         "unique_features": "Oversized frame, tinted lenses"
     }},
@@ -114,17 +112,11 @@ def describe_image_by_chatgpt(image_url: str):
         "clothe_type": "Tote Bag",
         "detailed_description": "A spacious tote bag with a minimalist geometric design in muted tones. The durable canvas with leather trims ensures practicality and style, while the interior features multiple pockets for organization.",
         "style": "Everyday Classic",
-        "color": "Off-white with tan accents",
+        "color": ["Off-white with tan accents","yellow"],
         "pattern": "Geometric",
         "fabric_type": "Canvas with leather trims",
         "shape_and_fit": "Spacious tote with shoulder straps",
-        "fit_type": "Relaxed",
-        "seasonality": "All seasons",
-        "weather_appropriateness": "All weather",
-        "color_family": "Neutrals",
-        "occasion": "Casual outings, shopping, travel",
         "occasion_type": "Everyday wear",
-        "fashion_trends": "Minimalism",
         "pose_and_movement": "Worn slung over one shoulder for practicality and style.",
         "unique_features": "Geometric design, multiple interior pockets"
     }},
@@ -132,17 +124,11 @@ def describe_image_by_chatgpt(image_url: str):
         "clothe_type": "Sneakers",
         "detailed_description": "Metallic gold sneakers with a rounded toe and lace-up front. They feature a cushioned insole for comfort and a sleek design for casual and athletic wear.",
         "style": "Sporty Casual",
-        "color": "Gold",
+        "color": ["Gold"],
         "pattern": "Solid",
         "fabric_type": "Synthetic",
         "shape_and_fit": "Casual fit, cushioned insole",
-        "fit_type": "Relaxed",
-        "seasonality": "All seasons",
-        "weather_appropriateness": "All weather",
-        "color_family": "Metallics",
-        "occasion": "Casual outings, city strolls",
         "occasion_type": "Everyday wear",
-        "fashion_trends": "Streetwear",
         "pose_and_movement": "Shown at an angle to highlight comfort and style.",
         "unique_features": "Metallic gold finish, lace-up front"
     }}
@@ -151,22 +137,16 @@ def describe_image_by_chatgpt(image_url: str):
     Your response must follow this format, structured as a JSON object:
         [
         {{
-            "clothe_type": "<clothing or accessory type>",
+            "clothe_type": "{clothe_types}",
             "detailed_description": "<detailed e-commerce style description>",
             "style": "<overall style>",
-            "color": "<dominant and secondary colors>",
+            "color": ["<dominant color>","<secondary color>"...],
             "pattern": "<any patterns or designs>",
             "fabric_type": "<material or fabric type>",
             "shape_and_fit": "<silhouette and fit>",
-            "fit_type": "<specific fit type (e.g., Skinny, Relaxed)>",
-            "seasonality": "<season (e.g., Summer, Winter)>",
-            "weather_appropriateness": "<weather suitability (e.g., Rainy, Cold Weather)>",
-            "color_family": "<general color family (e.g., Neutrals, Brights)>",
-            "occasion": "<appropriate occasions>",
             "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation)>",
-            "fashion_trends": "<specific fashion trend (e.g., Y2K, Athleisure)>",
             "pose_and_movement": "<details about how the item is worn or displayed in the image>",
-            "unique_features": "<special features or design elements>"
+            "unique_features": ["<special feature>"...]
         }},
         ...
         ]
@@ -187,3 +167,6 @@ def describe_image_by_chatgpt(image_url: str):
     ])
 
     return res
+
+
+

@@ -65,6 +65,7 @@ class SiglipManager:
             image_source=url_to_pil_image(image_source)
 
         classes=self.classify(image_source,["person body with face","clothe without face and body"])[0]
+        print(classes)
         return classes[0]>classes[1]
 
     

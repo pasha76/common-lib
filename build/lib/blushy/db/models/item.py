@@ -98,6 +98,12 @@ class Item(Base):
                     return False
                 return True
 
+            case ItemStatus.EXCEPTION_UPLOADED_TO_STORAGE:
+                if self._master_status_id != ItemStatus.DOWNLOADED.value:
+                    return False
+                return True
+
+
             case ItemStatus.ENCODED_IMAGE:
                 if self.master_status_id != ItemStatus.UPLOADED_TO_STORAGE.value:
                     return False
@@ -191,7 +197,7 @@ class Item(Base):
                 return self.title and self.price > 0 and self.item_id and self.link
 
             case ItemStatus.EXPIRED:
-                if self.master_status_id != ItemStatus.READY.value:
+                if self.master_status_id != ItemStatus.UPLOADED_TO_VECTORDB.value:
                     return False
                 return True
     
@@ -222,8 +228,7 @@ class Item(Base):
         vector_db.upsert_vectors(ids,vectors,metadatas)
 
     def expire(self,vector_db):
-        for image in self.images:
-            vector_db.delete_by_id(image.id)
+        vector_db.delete_by_id(self.id)
         
     
     def to_dict(self):
@@ -283,10 +288,10 @@ class Item(Base):
         
     @staticmethod
     def list_all_encoded_description_items(session):
-        return session.query(Item).filter((Item._master_status_id == ItemStatus.UPLOADED_TO_VECTORDB.value),
+        return session.query(Item).filter((Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
                                           Item.ai_clothe_type_id.isnot(None),
                                           Item.text_embedding.isnot(None),
-                                          Item.vendor_id==3,
+                                          #Item.vendor_id==3,
                                           Item.blushy_clothe_type.isnot(None),
                                           Item.image_description.isnot(None)).all()
                                           

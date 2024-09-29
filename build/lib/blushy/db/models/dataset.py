@@ -11,6 +11,7 @@ class Dataset(Base):
     __tablename__ = 'dataset'
     id = Column(Integer, primary_key=True) 
     image_url =Column(String(500),nullable=False)
+    image_hash=Column(String(255),nullable=True,unique=True)
     description = Column(Text, nullable=False) 
 
 
