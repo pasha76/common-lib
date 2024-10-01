@@ -107,9 +107,9 @@ class VectorManager:
             QueryRequest(query=qv)
             for qv in query_vectors
         ]
-        print(search_queries)
+        assert len(search_queries)==len(query_vectors)
 
-        return self.client.query_batch_points(collection_name="labels", requests=search_queries)
+        return self.client.query_batch_points(collection_name=self.collection_name, requests=search_queries)
 
 
 

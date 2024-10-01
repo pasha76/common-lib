@@ -5,7 +5,6 @@ blushy.egg-info/SOURCES.txt
 blushy.egg-info/dependency_links.txt
 blushy.egg-info/requires.txt
 blushy.egg-info/top_level.txt
-blushy/affiliates/__init__.py
 blushy/db/__init__.py
 blushy/db/models/__init__.py
 blushy/db/models/ai_clothe_type.py
@@ -45,6 +44,7 @@ blushy/utils/instagramapi.py
 blushy/utils/labeler.py
 blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py
+blushy/utils/upload_labeler.py
 blushy/utils/vector_manager.py
 blushy/utils/pinterest/__init__.py
 blushy/utils/pinterest/config.py
