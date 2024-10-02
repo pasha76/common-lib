@@ -1,7 +1,7 @@
 # common/db/session.py
 
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,text
 from blushy.db.models import base
 from sqlalchemy.exc import OperationalError
 import time
@@ -28,7 +28,7 @@ def get_session(max_retries=3, retry_delay=1):
                 session = Session()
             
             # Test the connection
-            session.execute("SELECT 1")
+            session.execute(text("SELECT 1"))
             
             return session
         except OperationalError as e:
