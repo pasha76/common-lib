@@ -41,6 +41,7 @@ blushy/utils/cache_manager.py
 blushy/utils/chatgpt_util.py
 blushy/utils/gcs.py
 blushy/utils/instagramapi.py
+blushy/utils/item_labeler.py
 blushy/utils/labeler.py
 blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py
