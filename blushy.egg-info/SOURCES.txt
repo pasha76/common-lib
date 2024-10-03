@@ -17,6 +17,7 @@ blushy/db/models/dataset.py
 blushy/db/models/favorite_post.py
 blushy/db/models/invitation.py
 blushy/db/models/item.py
+blushy/db/models/items_colors.py
 blushy/db/models/label.py
 blushy/db/models/master_clothe_type.py
 blushy/db/models/master_color.py

@@ -11,6 +11,8 @@ from blushy.utils.gcs import GCSUploader
 import enum
 from blushy.utils.base import url_to_pil_image,serialize_embedding
 import json
+from sqlalchemy import Table, Column, Integer, ForeignKey
+from blushy.db.models.items_colors import item_color_association
 
 class ItemStatus(enum.Enum):
     DOWNLOADED = 1
@@ -47,6 +49,9 @@ class Item(Base):
 
     master_color_id = Column(Integer, ForeignKey('master_colors.id'))
     master_color = relationship("MasterColor", back_populates="items")
+
+    colors = relationship("MasterColor", secondary=item_color_association, back_populates="items")
+
 
     ai_clothe_type_id = Column(Integer, ForeignKey('ai_clothe_types.id'))
     ai_clothe_type = relationship('AIClotheType', back_populates='items')
