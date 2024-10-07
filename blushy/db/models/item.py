@@ -219,7 +219,7 @@ class Item(Base):
             "vendor_link":self.vendor.logo,
             "master_gender_id":self.master_gender_id,
             "country_id":self.vendor.country_id,
-            "master_color_id":self.master_color_id,
+            "master_color_id":self.colors[0].id,
             "master_style_id":self.master_style_id,
             "image_url":self.image_url,
             "item_url":self.link,

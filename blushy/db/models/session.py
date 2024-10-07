@@ -12,6 +12,9 @@ engine = create_engine(DATABASE_URL)
 session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
 
+from sqlalchemy.exc import OperationalError, PendingRollbackError
+import time
+
 def get_session(max_retries=3, retry_delay=1):
     """
     Returns a new session object with retry mechanism.
@@ -31,6 +34,11 @@ def get_session(max_retries=3, retry_delay=1):
             session.execute(text("SELECT 1"))
             
             return session
+        except PendingRollbackError:
+            # If there's a pending rollback, perform it and try again
+            if session:
+                session.rollback()
+            continue
         except OperationalError as e:
             if attempt < max_retries - 1:
                 print(f"Connection attempt {attempt + 1} failed. Retrying in {retry_delay} seconds...")
@@ -38,5 +46,11 @@ def get_session(max_retries=3, retry_delay=1):
             else:
                 print(f"Failed to connect after {max_retries} attempts.")
                 raise e
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            if session:
+                session.rollback()
+            raise
 
     raise Exception("Failed to establish a database connection.")
+
