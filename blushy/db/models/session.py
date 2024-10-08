@@ -1,16 +1,11 @@
 # common/db/session.py
-
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine,text
 from blushy.db.models import base
 from sqlalchemy.exc import OperationalError
 import time
 
-DATABASE_URL="mysql+pymysql://root:tolga1194031@35.184.196.46/blushyv2"
-# Create engine and session
-engine = create_engine(DATABASE_URL)
-session_factory = sessionmaker(bind=engine)
-Session = scoped_session(session_factory)
+
 
 from sqlalchemy.exc import OperationalError, PendingRollbackError
 import time
@@ -23,12 +18,19 @@ def get_session(max_retries=3, retry_delay=1):
     :param retry_delay: Delay in seconds between retries.
     :return: SQLAlchemy session object.
     """
+    global Session
+    try:
+        session = Session()
+        print("session is valid")
+    except Exception as e:
+        Session = base.init_db()
+        session = Session()
+        print("session created")
+
+    
     for attempt in range(max_retries):
         try:
-            session = Session()
-            if not session or not session.is_active:
-                base.init_db()
-                session = Session()
+            
             
             # Test the connection
             session.execute(text("SELECT 1"))

@@ -1,7 +1,7 @@
 # common/db/models/__init__.py
 
 from blushy.db.models.base import Base, init_db
-from blushy.db.models.session import get_session,engine
+from blushy.db.models.session import get_session
 from blushy.db.models.vendor import Vendor
 from blushy.db.models.country import Country
 from blushy.db.models.item import Item
