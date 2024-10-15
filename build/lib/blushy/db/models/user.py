@@ -45,6 +45,7 @@ class User(Base):
     saved_posts=relationship('SavedPost', back_populates='user')
     created_at = Column(DateTime, default=datetime.utcnow)
     comments=relationship('Comment', back_populates='user')
+    search_histories=relationship('SearchHistory', back_populates='user')
     invitations=relationship('Invitation', back_populates='user')
 
     def calculate_fashion_score(self):

@@ -9,7 +9,7 @@ class SearchHistory(Base):
     __tablename__ = 'search_histories'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False,index=True)
-    user=relationship('User', back_populates='invitations')
+    user=relationship('User', back_populates='search_histories')
     keywords = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
