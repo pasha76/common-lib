@@ -12,6 +12,8 @@ class Invitation(Base):
     user=relationship('User', back_populates='invitations')
     invitation_key = Column(String(5), nullable=False,unique=True,index=True)
     instagram_username = Column(String(50), nullable=False)
+    youtube_username = Column(String(50), nullable=False)
+    tiktok_username = Column(String(50), nullable=False)
     invitation_status = Column(Integer,default=1)
     created_at = Column(DateTime, default=datetime.utcnow)
 

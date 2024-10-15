@@ -27,6 +27,7 @@ blushy/db/models/master_style.py
 blushy/db/models/post.py
 blushy/db/models/post_status.py
 blushy/db/models/saved_post.py
+blushy/db/models/search_history.py
 blushy/db/models/seen_post.py
 blushy/db/models/session.py
 blushy/db/models/sold_item.py

@@ -5,15 +5,11 @@ from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
 
-class Invitation(Base):
-    __tablename__ = 'invitations'
+class SearchHistory(Base):
+    __tablename__ = 'search_histories'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False,index=True)
     user=relationship('User', back_populates='invitations')
-    invitation_key = Column(String(5), nullable=False,unique=True,index=True)
-    instagram_username = Column(String(50), nullable=False)
-    youtube_username = Column(String(50), nullable=False)
-    tiktok_username = Column(String(50), nullable=False)
-    invitation_status = Column(Integer,default=1)
+    keywords = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
