@@ -4,7 +4,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from blushy.utils.base import url_to_pil_image
 import xml.etree.ElementTree as ET
 import time
-
+import ast
+import re
 # Set device and data type for CPU
 
 PATH= "/Users/tolgagunduz/Documents/projects/blushyv2/model-weigths/moondream-ft-long"
@@ -35,6 +36,36 @@ class Labeler:
         self.tokenizer = AutoTokenizer.from_pretrained("vikhyatk/moondream2",cache_dir=PATH ,revision=MD_REVISION)# Ensure model is in evaluation mode
         self.moondream.eval()
 
+
+    def _parse_incomplete_array(self,input_string):
+        # Remove newlines and extra spaces
+        input_string = re.sub(r'\s+', ' ', input_string.strip())
+        
+        # Find all complete dictionaries
+        pattern = r'\{[^}]+\}'
+        dict_strings = re.findall(pattern, input_string)
+        
+        result = []
+        for dict_string in dict_strings:
+            try:
+                # Use ast.literal_eval to safely evaluate the dictionary string
+                parsed_dict = ast.literal_eval(dict_string)
+                result.append(parsed_dict)
+            except (SyntaxError, ValueError):
+                # If there's an error (likely due to an incomplete dictionary),
+                # we'll parse it manually
+                partial_dict = {}
+                for item in re.findall(r"'(\w+)':\s*(\[[^\]]*\]|'[^']*')", dict_string):
+                    key, value = item
+                    try:
+                        partial_dict[key] = ast.literal_eval(value)
+                    except (SyntaxError, ValueError):
+                        # If we can't evaluate, store as string
+                        partial_dict[key] = value.strip("'")
+                result.append(partial_dict)
+        
+        return result
+    
     def _dict_to_sentence(self,product):
 
         color = ' and '.join(product['color'])
@@ -46,17 +77,15 @@ class Labeler:
 
     def _image_to_dict(self, image_source):
         description_dict=[]
-        try:
-            description_dict = self.moondream.answer_question(
-                        self.moondream.encode_image(image_source),
-                        "Describe.",
-                        tokenizer=self.tokenizer,
-                        num_beams=1,
-                        repetition_penalty=1.2,
-                    )
-            description_dict=eval(description_dict)
-        except Exception as e:
-            return []
+        description_dict = self.moondream.answer_question(
+                    self.moondream.encode_image(image_source),
+                    "Describe.",
+                    tokenizer=self.tokenizer,
+                    num_beams=2,
+                    repetition_penalty=1.2,
+                )
+        description_dict=self._parse_incomplete_array(description_dict)
+        
         return description_dict
 
     def label(self, image_source):
