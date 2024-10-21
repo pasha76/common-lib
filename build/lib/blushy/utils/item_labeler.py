@@ -7,7 +7,7 @@ import time
 
 # Set device and data type for CPU
 
-PATH= "/Users/tolgagunduz/Documents/projects/blushyv2/model-weigths/moondream-ft-short"
+PATH= "/Users/tolgagunduz/Documents/projects/blushyv2/model-weigths/moondream-ft-long"
 
 if env.is_remote():
     PATH= "/volumes/model-weights/model-weigths/moondream-ft-long"
