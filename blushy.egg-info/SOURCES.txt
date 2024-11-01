@@ -40,6 +40,8 @@ blushy/db/models/visit_post.py
 blushy/utils/__init__.py
 blushy/utils/base.py
 blushy/utils/cache_manager.py
+blushy/utils/chatgpt_general_classification.py
+blushy/utils/chatgpt_img_classifier.py
 blushy/utils/chatgpt_util.py
 blushy/utils/gcs.py
 blushy/utils/instagramapi.py

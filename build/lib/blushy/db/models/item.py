@@ -13,6 +13,8 @@ from blushy.utils.base import url_to_pil_image,serialize_embedding
 import json
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from blushy.db.models.items_colors import item_color_association
+from blushy.db.models.ai_clothe_type import AIClotheType
+
 
 class ItemStatus(enum.Enum):
     DOWNLOADED = 1
@@ -191,15 +193,14 @@ class Item(Base):
             case ItemStatus.READY:
                 if self.master_status_id != ItemStatus.UPLOADED_TO_VECTORDB.value:
                     return False
-                with self as image:
-                    if image.description is None:
-                        return False
-                    if image.text_embedding is None:
-                        return False
-                    if image.image_embedding is None:
-                        return False
+                if self.blushy_clothe_type is None:
+                    return False
+                if self.text_embedding is None:
+                    return False
+                if self.image_embedding is None:
+                    return False
                     
-                return self.title and self.price > 0 and self.item_id and self.link
+                return True
 
             case ItemStatus.EXPIRED:
                 if self.master_status_id != ItemStatus.UPLOADED_TO_VECTORDB.value:
@@ -293,10 +294,10 @@ class Item(Base):
         
     @staticmethod
     def list_all_encoded_description_items(session):
-        return session.query(Item).filter((Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
+        return session.query(Item).join(AIClotheType).filter((Item._master_status_id == ItemStatus.ENCODED_DESCRIPTION.value),
                                           Item.ai_clothe_type_id.isnot(None),
                                           Item.text_embedding.isnot(None),
-                                          #Item.vendor_id==3,
+                                          AIClotheType.master_clothe_type_id.isnot(None),
                                           Item.blushy_clothe_type.isnot(None),
                                           Item.image_description.isnot(None)).all()
                                           

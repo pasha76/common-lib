@@ -13,6 +13,16 @@ class Dataset(Base):
     image_url =Column(String(500),nullable=False)
     image_hash=Column(String(255),nullable=True,unique=True)
     description = Column(Text, nullable=False) 
+    full_body_human = Column(Boolean)
+    partial_body_human = Column(Boolean)
+    no_human = Column(Boolean)
+    clothe_wearables = Column(Boolean)
+    more_than_one_person = Column(Boolean)
+    aesthetic_score = Column(Integer)
+
+
+
+
 
 
     def to_dict(self):

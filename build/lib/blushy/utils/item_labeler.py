@@ -66,17 +66,10 @@ class Labeler:
         
         return result
     
-    def _dict_to_sentence(self,product):
 
-        color = ' and '.join(product['color'])
-        features = ', '.join(product['unique_features'])
-        sentence = (f"The product is {product['style']} {product['clothe_type']} in {color}. "
-                    f"This stylish piece features {features}. "
-                    f"Made from {product['fabric_type']}, it's perfect for {product['occasion_type']}.")
-        return sentence.lower()
 
     def _image_to_dict(self, image_source):
-        description_dict=[]
+
         description_dict = self.moondream.answer_question(
                     self.moondream.encode_image(image_source),
                     "Describe.",

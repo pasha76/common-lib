@@ -201,3 +201,6 @@ class VectorManager:
                     points=[ids],
                 ),
             )
+
+    def delete_by_filters(self,delete_filter):
+        return self.client.delete(collection_name=self.collection_name, points_selector=delete_filter)
