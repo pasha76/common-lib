@@ -34,7 +34,8 @@ class Label(Base):
         metadata = {
             "post_id":self.post_id,
             "country_id":self.post.user.country_id,
-            "master_gender_id":self.post.user.master_gender_id
+            "master_gender_id":self.post.user.master_gender_id,
+            "master_clothe_type_id":self.ai_clothe_type.master_clothe_type_id
         }
         ids.append(self.id)
         metadatas.append(metadata)

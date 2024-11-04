@@ -6,7 +6,8 @@ import xml.etree.ElementTree as ET
 import time
 import ast
 import re
-# Set device and data type for CPU
+from blushy.utils.chatgpt_util import describe_image_by_chatgpt
+# Set device and data    type for CPU
 
 PATH= "/Users/tolgagunduz/Documents/projects/blushyv2/model-weigths/moondream-ft-long"
 
@@ -69,6 +70,7 @@ class Labeler:
 
 
     def _image_to_dict(self, image_source):
+     
 
         description_dict = self.moondream.answer_question(
                     self.moondream.encode_image(image_source),
@@ -80,10 +82,15 @@ class Labeler:
         description_dict=self._parse_incomplete_array(description_dict)
         
         return description_dict
+        
+
 
     def label(self, image_source):
         if isinstance(image_source, str):
-            image_source = url_to_pil_image(image_source)
+            clothes=describe_image_by_chatgpt(image_source)
+            product_list=[clothe.to_dict() for clothe in clothes]
+            return product_list
+            #image_source = url_to_pil_image(image_source)
         product_list = self._image_to_dict(image_source)
         return product_list
     
