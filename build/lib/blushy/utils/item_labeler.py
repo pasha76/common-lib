@@ -20,22 +20,24 @@ if env.is_remote():
 
 
 class Labeler:
-    def __init__(self,device="cpu",PATH=PATH):
-        print("Loading Moondream model...",PATH)
-        DEVICE = device
-        DTYPE = torch.float32 if DEVICE == "cpu" else torch.float16
-        MD_REVISION = "2024-08-26"
-        # Load model with custom code (trusting remote code)
-        self.moondream = AutoModelForCausalLM.from_pretrained(
-            PATH,
-            revision=MD_REVISION,
-            trust_remote_code=True,  # Allows loading custom code
-            attn_implementation=None,  # Not using Flash Attention on CPU
-            torch_dtype=DTYPE,
-              device_map={"": DEVICE})
-        
-        self.tokenizer = AutoTokenizer.from_pretrained("vikhyatk/moondream2",cache_dir=PATH ,revision=MD_REVISION)# Ensure model is in evaluation mode
-        self.moondream.eval()
+    def __init__(self,device="cpu",PATH=PATH,CHATGPT=True):
+        if not CHATGPT:
+            print("Loading Moondream model...",PATH)
+            DEVICE = device
+            DTYPE = torch.float32 if DEVICE == "cpu" else torch.float16
+            MD_REVISION = "2024-08-26"
+            # Load model with custom code (trusting remote code)
+            self.moondream = AutoModelForCausalLM.from_pretrained(
+                PATH,
+                revision=MD_REVISION,
+                trust_remote_code=True,  # Allows loading custom code
+                attn_implementation=None,  # Not using Flash Attention on CPU
+                torch_dtype=DTYPE,
+                device_map={"": DEVICE})
+            
+            self.tokenizer = AutoTokenizer.from_pretrained("vikhyatk/moondream2",cache_dir=PATH ,revision=MD_REVISION)# Ensure model is in evaluation mode
+            self.moondream.eval()
+        self.CHATGPT=CHATGPT
 
 
     def _parse_incomplete_array(self,input_string):
@@ -87,10 +89,11 @@ class Labeler:
 
     def label(self, image_source):
         if isinstance(image_source, str):
-            clothes=describe_image_by_chatgpt(image_source)
-            product_list=[clothe.to_dict() for clothe in clothes]
-            return product_list
-            #image_source = url_to_pil_image(image_source)
+            if self.CHATGPT:
+                clothes=describe_image_by_chatgpt(image_source)
+                product_list=[clothe.to_dict() for clothe in clothes]
+                return product_list
+            image_source = url_to_pil_image(image_source)
         product_list = self._image_to_dict(image_source)
         return product_list
     
