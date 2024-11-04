@@ -22,7 +22,7 @@ def classify_chatgpt_json(messages, return_obj, max_tokens=1800):
 
     # Calling GPT to get the detailed description
     completion = client.chat.completions.create(
-        model="gpt-4-vision-preview",
+        model="gpt-4o-mini",
         messages=messages,
         max_tokens=max_tokens,
         response_format={ "type": "json_object" }
