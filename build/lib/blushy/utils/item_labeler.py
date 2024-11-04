@@ -22,6 +22,7 @@ if env.is_remote():
 class Labeler:
     def __init__(self,device="cpu",PATH=PATH,CHATGPT=True):
         if not CHATGPT:
+            
             print("Loading Moondream model...",PATH)
             DEVICE = device
             DTYPE = torch.float32 if DEVICE == "cpu" else torch.float16
