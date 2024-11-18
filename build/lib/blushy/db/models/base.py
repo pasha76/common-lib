@@ -3,6 +3,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.pool import QueuePool
 
 # Base class for all models
 Base = declarative_base()
@@ -15,10 +16,11 @@ def init_db(engine_url="mysql+pymysql://root:tolga1194031@35.184.196.46/blushyv2
     :return: Sessionmaker instance.
     """
     engine = create_engine(engine_url,
-                           pool_size=20,  # Increase from 5
-                            max_overflow=30,  # Increase from 10
-                            pool_timeout=60,  # Increase timeout from 30
-                            pool_pre_ping=True  # Add connection health check)
+                           poolclass=QueuePool,
+                            pool_size=20,  # Increase base pool size
+                            max_overflow=30,  # Increase maximum overflow connections
+                            pool_timeout=60,  # Increase timeout (in seconds)
+                            pool_recycle=3600  # Recycle connections after 1 hour
                             )
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
