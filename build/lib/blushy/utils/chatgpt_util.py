@@ -3,6 +3,8 @@ from openai import OpenAI
 import os
 from typing import List
 
+from sympy import Li
+
 class Clothe(BaseModel):
     clothe_type: str
     detailed_description: str
@@ -14,6 +16,7 @@ class Clothe(BaseModel):
     occasion_type: str
     pose_and_movement: str
     unique_features: List[str]  # Specify the type of items in the list
+    bounding_box:List[int]
 
     def to_dict(self):
         return {
@@ -26,7 +29,8 @@ class Clothe(BaseModel):
             "shape_and_fit": self.shape_and_fit,
             "occasion_type": self.occasion_type,
             "pose_and_movement": self.pose_and_movement,
-            "unique_features": self.unique_features
+            "unique_features": self.unique_features,
+            "bounding_box":self.bounding_box
         }
 
 class Clothes(BaseModel):
@@ -106,7 +110,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "fit_type": "Loose",
         "occasion_type": "Casual wear",
         "pose_and_movement": "Perched stylishly on the face, the sunglasses enhance the confident pose of the wearer.",
-        "unique_features": "Oversized frame, tinted lenses"
+        "unique_features": "Oversized frame, tinted lenses",
+        "bounding_box":[100,200,306,505]
     }},
     {{
         "clothe_type": "Tote Bag",
@@ -118,7 +123,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "shape_and_fit": "Spacious tote with shoulder straps",
         "occasion_type": "Everyday wear",
         "pose_and_movement": "Worn slung over one shoulder for practicality and style.",
-        "unique_features": "Geometric design, multiple interior pockets"
+        "unique_features": "Geometric design, multiple interior pockets",
+        "bounding_box":[24,120,240,600]
     }},
     {{
         "clothe_type": "Sneakers",
@@ -130,7 +136,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "shape_and_fit": "Casual fit, cushioned insole",
         "occasion_type": "Everyday wear",
         "pose_and_movement": "Shown at an angle to highlight comfort and style.",
-        "unique_features": "Metallic gold finish, lace-up front"
+        "unique_features": "Metallic gold finish, lace-up front",
+        "bounding_box":[56,85,124,432]
     }}
     ]
 
@@ -146,7 +153,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
             "shape_and_fit": "<silhouette and fit>",
             "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation)>",
             "pose_and_movement": "<details about how the item is worn or displayed in the image>",
-            "unique_features": ["<special feature>"...]
+            "unique_features": ["<special feature>"...],
+            "bounding_box":[x1,y1,x2,y2]
         }},
         ...
         ]
