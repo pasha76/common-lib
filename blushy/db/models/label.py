@@ -24,6 +24,8 @@ class Label(Base):
     master_style = relationship('MasterStyle', back_populates='post_labels')
 
     text_embedding = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
+    label_info = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
+    image_embedding= Column(Text, nullable=True)  # Store as JSON string in a TEXT field
     description = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
 
 

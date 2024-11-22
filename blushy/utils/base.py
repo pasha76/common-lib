@@ -5,7 +5,7 @@ import json
 import imagehash
 import hashlib
 import urllib3
-
+import numpy as np
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -23,7 +23,11 @@ def text_to_hash(unique_string):
     return hash_object.hexdigest()
 
 
-
+def concat(text_embedding,image_embedding):
+    normalized_text_embedding = text_embedding / np.linalg.norm(text_embedding)
+    normalized_image_embedding = image_embedding / np.linalg.norm(image_embedding)
+    combined_embedding = np.concatenate([normalized_text_embedding, normalized_image_embedding])
+    return combined_embedding
 
 
 def deserialize_embedding(embedding_str):
