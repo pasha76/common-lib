@@ -9,6 +9,7 @@ import json
 
 class Label(Base):
     
+    
     __tablename__ = 'labels'
     id = Column(Integer, primary_key=True) 
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False,index=True)
