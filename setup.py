@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.3.2',
+    version='0.3.21',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*"]),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
@@ -24,7 +24,8 @@ setup(
        "imagehash",
        "openai",
        "funcy",
-       "sacremoses"
+       "sacremoses",
+       "google-generativeai"
     ],
     include_package_data=True,
     description='A utility package for common functionalities',

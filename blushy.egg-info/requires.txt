@@ -18,3 +18,4 @@ imagehash
 openai
 funcy
 sacremoses
+google-generativeai
