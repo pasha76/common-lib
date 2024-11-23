@@ -42,7 +42,7 @@ class Clothes(BaseModel):
 
 
 
-def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
+def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
     # Setting up Gemini API client
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
@@ -59,30 +59,8 @@ def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
         generation_config=generation_config,
     )
 
-    # Extract image URL from messages
-    image_url = None
-    for msg in messages:
-        if msg.get("content"):
-            for content in msg["content"]:
-                if content.get("type") == "image_url":
-                    image_url = content["image_url"]["url"]
-                    break
-
-    if not image_url:
-        raise ValueError("No image URL found in messages")
-
-    # Load and prepare the image
-    image = url_to_pil_image(image_url)
-
-    # Get system prompt and user prompt
-    system_prompt = next(msg["content"] for msg in messages if msg["role"] == "system")
-    user_prompt = next(msg["content"][0]["text"] for msg in messages if msg["role"] == "user")
-
-    # Combine prompts and generate response
-    response = model.generate_content([
-        f"{system_prompt}\n{user_prompt}",
-        image
-    ])
+    # Combine prompt and image for generation
+    response = model.generate_content([prompt, image])
 
     # Parse the JSON response and convert to Clothes object
     try:
@@ -191,7 +169,7 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "bounding_box":[56,85,124,432]
     }}
     ]
-    
+
 
     Your response must follow this format, structured as a JSON object:
         [
@@ -214,7 +192,7 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         """
 
     # Call the function to analyze the image
-    res = analyze_image_by_chatgpt_json(messages=[
+    """res = analyze_image_by_chatgpt_json(messages=[
         {
             "role": "system",
             "content": "You are an AI that provides detailed, structured clothing descriptions based on images for an e-commerce platform."
@@ -225,7 +203,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
                         {"type": "image_url", "image_url": {"url": image_url}}]
         }
     ])
-
+    """
+    res = analyze_image_by_chatgpt_json(image_url,prompt)
     return res
 
 
