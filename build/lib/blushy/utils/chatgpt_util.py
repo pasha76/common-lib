@@ -47,7 +47,7 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
     generation_config = {
-        "temperature": 1,
+        "temperature": 0.,
         "top_p": 0.95,
         "top_k": 40,
         "max_output_tokens": max_tokens,
@@ -60,7 +60,7 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
     )
 
     # Combine prompt and image for generation
-    response = model.generate_content([prompt, image])
+    response = model.generate_content([url_to_pil_image(image),prompt])
 
     # Parse the JSON response and convert to Clothes object
     try:
