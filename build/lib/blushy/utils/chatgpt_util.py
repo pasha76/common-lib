@@ -191,6 +191,7 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "bounding_box":[56,85,124,432]
     }}
     ]
+    
 
     Your response must follow this format, structured as a JSON object:
         [
