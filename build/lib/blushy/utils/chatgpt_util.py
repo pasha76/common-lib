@@ -2,8 +2,9 @@ from pydantic import BaseModel, Field
 from openai import OpenAI
 import os
 from typing import List
-
-from sympy import Li
+import json
+import google.generativeai as genai
+from blushy.utils.base import url_to_pil_image
 
 class Clothe(BaseModel):
     clothe_type: str
@@ -42,6 +43,56 @@ class Clothes(BaseModel):
 
 
 def analyze_image_by_chatgpt_json(messages, max_tokens=1800):
+    # Setting up Gemini API client
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+    generation_config = {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": max_tokens,
+        "response_mime_type": "application/json",
+    }
+
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash-8b",
+        generation_config=generation_config,
+    )
+
+    # Extract image URL from messages
+    image_url = None
+    for msg in messages:
+        if msg.get("content"):
+            for content in msg["content"]:
+                if content.get("type") == "image_url":
+                    image_url = content["image_url"]["url"]
+                    break
+
+    if not image_url:
+        raise ValueError("No image URL found in messages")
+
+    # Load and prepare the image
+    image = url_to_pil_image(image_url)
+
+    # Get system prompt and user prompt
+    system_prompt = next(msg["content"] for msg in messages if msg["role"] == "system")
+    user_prompt = next(msg["content"][0]["text"] for msg in messages if msg["role"] == "user")
+
+    # Combine prompts and generate response
+    response = model.generate_content([
+        f"{system_prompt}\n{user_prompt}",
+        image
+    ])
+
+    # Parse the JSON response and convert to Clothes object
+    try:
+        clothes_data = json.loads(response.text)
+        return Clothes(clothes=[Clothe(**item) for item in clothes_data])
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse Gemini response as JSON: {e}")
+
+
+def old_analyze_image_by_chatgpt_json(messages, max_tokens=1800):
     # Setting up OpenAI API client
     api_key = os.environ["CHATGPT_API_KEY"]
     client = OpenAI(api_key=api_key)
