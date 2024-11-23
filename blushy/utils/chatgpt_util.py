@@ -65,7 +65,7 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
     # Parse the JSON response and convert to Clothes object
     try:
         clothes_data = json.loads(response.text)
-        return Clothes(clothes=[Clothe(**item) for item in clothes_data])
+        return Clothes(clothes=[Clothe(**item) for item in clothes_data]).clothes
     except json.JSONDecodeError as e:
         raise ValueError(f"Failed to parse Gemini response as JSON: {e}")
 
