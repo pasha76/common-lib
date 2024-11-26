@@ -73,6 +73,10 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=8192,credentials=Non
         "max_output_tokens": max_tokens,
         "response_mime_type": "application/json",
     }
+    image = Part.from_uri(
+            mime_type="image/jpeg",
+            uri=image,
+        )
 
     response = model.generate_content(
         [image,prompt],
@@ -230,4 +234,4 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
 
 
 if __name__=="__main__":
-    describe_image_by_chatgpt("https://storage.googleapis.com/blushy-posts-maidentech/f2e1df5d71464bf2406ee93e25767fc5b6bd8495ac7dc3eb65b75c8fa4c896b7.jpg")
+    describe_image_by_chatgpt("https://i.pinimg.com/736x/5f/0d/1a/5f0d1a28be215d45e342fcc39ea92b07.jpg")
