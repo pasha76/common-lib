@@ -5,6 +5,13 @@ from typing import List
 import json
 import google.generativeai as genai
 from blushy.utils.base import url_to_pil_image
+import vertexai
+
+from vertexai.generative_models import GenerativeModel, Part
+from google.oauth2 import service_account
+
+
+
 
 class Clothe(BaseModel):
     clothe_type: str
@@ -42,9 +49,22 @@ class Clothes(BaseModel):
 
 
 
-def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
+def analyze_image_by_chatgpt_json(image, prompt, max_tokens=8192,credentials=None):
+    if credentials:
+        credentials = service_account.Credentials.from_service_account_file(credentials)
+    else:
+        credentials = service_account.Credentials.from_service_account_file("/Users/tolgagunduz/Documents/projects/blushyv2/app/creds/vertex/fashion-maidentech-3b1a88b308ed.json")
     # Setting up Gemini API client
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    #genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+    vertexai.init(
+        project="fashion-maidentech", 
+        location="us-central1",
+        credentials=credentials
+    )
+
+
+    model = GenerativeModel("gemini-1.5-flash-002")
 
     generation_config = {
         "temperature": 0.,
@@ -54,13 +74,12 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=1800):
         "response_mime_type": "application/json",
     }
 
-    model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash-8b",
+    response = model.generate_content(
+        [image,prompt],
         generation_config=generation_config,
     )
 
-    # Combine prompt and image for generation
-    response = model.generate_content([url_to_pil_image(image),prompt])
+
 
     # Parse the JSON response and convert to Clothes object
     try:
@@ -86,7 +105,7 @@ def old_analyze_image_by_chatgpt_json(messages, max_tokens=1800):
     # Returning the parsed clothes descriptions
     return completion.choices[0].message.parsed.clothes
 
-def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,colors=None):
+def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,colors=None,credentials=None):
     
     if clothe_types:
         clothe_types=("|").join(clothe_types)
@@ -175,13 +194,13 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         [
         {{
             "clothe_type": "{clothe_types}",
-            "detailed_description": "<detailed e-commerce style description>",
-            "style": "<overall style>",
+            "detailed_description": "<detailed e-commerce style description as string>",
+            "style": "<overall style as string>",
             "color": ["<dominant color>","<secondary color>"...],
-            "pattern": "<any patterns or designs>",
-            "fabric_type": "<material or fabric type>",
-            "shape_and_fit": "<silhouette and fit>",
-            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation)>",
+            "pattern": "<any patterns or designs as string>",
+            "fabric_type": "<material or fabric type as string>",
+            "shape_and_fit": "<silhouette and fit as string>",
+            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation) as string>",
             "pose_and_movement": "<details about how the item is worn or displayed in the image>",
             "unique_features": ["<special feature>"...],
             "bounding_box":[x1,y1,x2,y2]
@@ -204,8 +223,11 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         }
     ])
     """
-    res = analyze_image_by_chatgpt_json(image_url,prompt)
+    res = analyze_image_by_chatgpt_json(image_url,prompt,credentials=credentials)
+    print(res)
     return res
 
 
 
+if __name__=="__main__":
+    describe_image_by_chatgpt("https://storage.googleapis.com/blushy-posts-maidentech/f2e1df5d71464bf2406ee93e25767fc5b6bd8495ac7dc3eb65b75c8fa4c896b7.jpg")

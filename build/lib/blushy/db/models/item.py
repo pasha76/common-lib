@@ -256,6 +256,7 @@ class Item(Base):
         encoded_description=text_encoder.encode_text(self.image_description)
         self.text_embedding=encoded_description
         return encoded_description
+    
 
     def upload_to_gcs(self,gcs_manager:GCSUploader):
         image=url_to_pil_image(self.url)

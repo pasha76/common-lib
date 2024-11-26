@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: blushy
-Version: 0.3.24
+Version: 0.3.25
 Summary: A utility package for common functionalities
 Author: Tolga Gunduz
 Author-email: tolga@blushy.app
@@ -29,3 +29,4 @@ Requires-Dist: openai
 Requires-Dist: funcy
 Requires-Dist: sacremoses
 Requires-Dist: google-generativeai
+Requires-Dist: google-cloud-aiplatform

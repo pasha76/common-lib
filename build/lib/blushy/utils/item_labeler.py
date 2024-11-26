@@ -20,7 +20,7 @@ if env.is_remote():
 
 
 class Labeler:
-    def __init__(self,device="cpu",PATH=PATH,CHATGPT=True):
+    def __init__(self,device="cpu",PATH=PATH,CHATGPT=None):
         if not CHATGPT:
             
             print("Loading Moondream model...",PATH)
@@ -91,7 +91,7 @@ class Labeler:
     def label(self, image_source):
         if isinstance(image_source, str):
             if self.CHATGPT:
-                clothes=describe_image_by_chatgpt(image_source)
+                clothes=describe_image_by_chatgpt(image_source,credentials=self.CHATGPT)
                 product_list=[clothe.to_dict() for clothe in clothes]
                 return product_list
             image_source = url_to_pil_image(image_source)
@@ -103,5 +103,10 @@ class Labeler:
         if isinstance(image_sources, str):
             image_sources = url_to_pil_image(image_sources)
         return self.moondream.encode_image(image_sources)
+    
+
+if __name__=="__main__":
+    labeler=Labeler(CHATGPT="/Users/tolgagunduz/Documents/projects/blushyv2/app/creds/vertex/fashion-maidentech-3b1a88b308ed.json")
+    labeler.label("https://storage.googleapis.com/blushy-posts-maidentech/c8b5988569c37ad91754d0646ad08233db89ed3656420db29da69fa7b5d35b6e.jpg")
 
         

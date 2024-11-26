@@ -19,3 +19,4 @@ openai
 funcy
 sacremoses
 google-generativeai
+google-cloud-aiplatform
