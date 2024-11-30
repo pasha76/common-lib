@@ -1,9 +1,8 @@
-
 from qdrant_client.models import PointStruct,QueryRequest
 from qdrant_client.models import Distance, VectorParams,MatchValue,Filter,FieldCondition
 from qdrant_client import QdrantClient, models
-from qdrant_client import QdrantClient
 import os
+from typing import List, Dict, Union, Optional
 
 class VectorManager:
     def __init__(self,collection_name="vendors", vector_size=768, distance=Distance.COSINE):
@@ -204,3 +203,40 @@ class VectorManager:
 
     def delete_by_filters(self,delete_filter):
         return self.client.delete(collection_name=self.collection_name, points_selector=delete_filter)
+    
+
+    def batch_search_vectors(self, query_vectors, filter=None, limit=20, page=0):
+        """
+        Perform batch search for multiple query vectors with optional filtering
+        """
+        filters = []
+        if filter:
+            for k, v in filter.items():
+                filters.append(models.FieldCondition(
+                    key=k,
+                    match=models.MatchValue(
+                        value=v,
+                    ),
+                ))
+        
+        filter_obj = models.Filter(must=filters) if filters else None
+        
+        # Create batch search queries
+        search_queries = [
+            models.SearchRequest(
+                vector=qv,
+                filter=filter_obj,
+                limit=limit,
+                offset=page * limit,
+                with_payload=True
+            )
+            for qv in query_vectors
+        ]
+        
+        # Execute batch search
+        results = self.client.search_batch(
+            collection_name=self.collection_name,
+            requests=search_queries,
+        )
+        
+        return results
