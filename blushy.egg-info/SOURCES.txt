@@ -48,6 +48,7 @@ blushy/utils/instagramapi.py
 blushy/utils/item_labeler.py
 blushy/utils/labeler.py
 blushy/utils/owlv2.py
+blushy/utils/post_validator.py
 blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py
 blushy/utils/translator.py

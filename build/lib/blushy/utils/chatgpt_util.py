@@ -229,4 +229,5 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
 
 
 if __name__=="__main__":
-    describe_image_by_chatgpt("https://i.pinimg.com/736x/5f/0d/1a/5f0d1a28be215d45e342fcc39ea92b07.jpg",credentials="cred")
+  
+    describe_image_by_chatgpt("https://i.pinimg.com/736x/5f/0d/1a/5f0d1a28be215d45e342fcc39ea92b07.jpg",credentials=None)
