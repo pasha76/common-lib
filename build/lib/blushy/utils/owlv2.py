@@ -6,10 +6,12 @@ from typing import Any
 import numpy as np
 import supervision as sv
 import torch
+from blushy.utils.siglip_manager import SiglipManager
+from PIL import Image as PILImage
 
 from autodistill.detection import CaptionOntology, DetectionBaseModel
 from autodistill.helpers import load_image
-
+from blushy.utils.base import url_to_pil_image
 HOME = os.path.expanduser("~")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -18,7 +20,26 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class OWLv2(DetectionBaseModel):
     ontology: CaptionOntology
 
-    def __init__(self, ontology: CaptionOntology,processor=None,model=None):
+    def get_largest_bbox(self,results):
+        # Get all detections for the specified class
+        class_detections = results[results.class_id == 0]  # Assuming class_id 0 corresponds to our target class
+        
+        if len(class_detections) == 0:
+            return None
+        
+        # Calculate areas of all bounding boxes
+        areas = (class_detections.xyxy[:, 2] - class_detections.xyxy[:, 0]) * \
+                (class_detections.xyxy[:, 3] - class_detections.xyxy[:, 1])
+        
+        # Get the index of the largest box
+        largest_idx = np.argmax(areas)
+        
+        # Create new results with only the largest box
+        largest_detection = class_detections[largest_idx:largest_idx+1]
+        
+        return largest_detection
+
+    def __init__(self,processor=None,model=None,siglip_manager:SiglipManager=None):
         # install transformers from source, since OWLv2 is not yet in a release
         # (as of October 26th, 2023)
         try:
@@ -42,7 +63,8 @@ class OWLv2(DetectionBaseModel):
             self.model = Owlv2ForObjectDetection.from_pretrained(
             "google/owlv2-base-patch16-ensemble"
         )
-        self.ontology = ontology
+        self.siglip_manager=siglip_manager
+        
 
     def predict(self, input: Any, confidence: int = 0.1) -> sv.Detections:
         image = load_image(input, return_format="PIL")
@@ -86,3 +108,30 @@ class OWLv2(DetectionBaseModel):
             class_id=np.array(final_labels),
             confidence=np.array(final_scores),
         )
+    
+    def get_bbox(self,classname:str,imgage_source:Any):
+        ontology= CaptionOntology({classname: classname})
+        self.ontology = ontology
+        results=self.predict(imgage_source)
+        results= self.get_largest_bbox(results)
+        if results:
+            return results.xyxy[0]
+        return None
+    
+    def get_embeddings(self,classname:str,imgage_source:Any):
+        if not self.siglip_manager:
+            self.siglip_manager=SiglipManager()
+        if isinstance(imgage_source,str):
+            image_source=url_to_pil_image(imgage_source)
+        ontology= CaptionOntology({classname: classname})
+        self.ontology = ontology
+        results=self.predict(imgage_source)
+        results= self.get_largest_bbox(results)
+        if results:
+            image=image_source.crop(results.xyxy[0])
+            return self.siglip_manager.get_embeddings(image)
+        return None
+
+if __name__ == "__main__":
+    owlv2=OWLv2("person")
+    print(owlv2.get_bbox("https://storage.googleapis.com/blushy-posts-maidentech/c2b16a3fd4ee4ca7724fb8b59f4e20f4572f5118310695657c50021f38bf52c0.jpg"))

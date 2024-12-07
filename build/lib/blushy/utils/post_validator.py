@@ -42,15 +42,15 @@ class PostValidator:
         #ic(keypoints)
 
         # Check eyes visibility
-        eyes_visible = (keypoints[LEFT_EYE][0] > 0 and 
+        eyes_visible = (keypoints[LEFT_EYE][0] > 0 or 
                     keypoints[RIGHT_EYE][0] > 0)
 
         # Check upper legs (thighs) visibility
         # Upper legs are visible if both hips and knees are detected
         upper_legs_visible = (
-            keypoints[LEFT_HIP][0] > 0 and
+            keypoints[LEFT_HIP][0] > 0 or
             keypoints[RIGHT_HIP][0] > 0 and
-            keypoints[LEFT_KNEE][0] > 0 and
+            keypoints[LEFT_KNEE][0] > 0 or
             keypoints[RIGHT_KNEE][0] > 0
         )
 
