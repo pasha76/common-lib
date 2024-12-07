@@ -131,4 +131,4 @@ class OWLv2(DetectionBaseModel):
 
 if __name__ == "__main__":
     owlv2=OWLv2()
-    print(owlv2.get_embeddings("person","https://storage.googleapis.com/blushy-posts-maidentech/c2b16a3fd4ee4ca7724fb8b59f4e20f4572f5118310695657c50021f38bf52c0.jpg"))
+    print(owlv2.get_embeddings("sunglasses"," https://storage.googleapis.com/blushy-vendor-images/3f0d191959680d00e25431d47706171100d5551f26395346e93e24d12e440a6c.jpg"))
