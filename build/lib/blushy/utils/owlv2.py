@@ -109,29 +109,26 @@ class OWLv2(DetectionBaseModel):
             confidence=np.array(final_scores),
         )
     
-    def get_bbox(self,classname:str,imgage_source:Any):
-        ontology= CaptionOntology({classname: classname})
-        self.ontology = ontology
-        results=self.predict(imgage_source)
+    def get_bbox(self,classname:str,image_source:Any):
+        self.ontology= CaptionOntology({classname: classname})
+        results=self.predict(image_source)
         results= self.get_largest_bbox(results)
         if results:
             return results.xyxy[0]
         return None
     
-    def get_embeddings(self,classname:str,imgage_source:Any):
+    def get_embeddings(self,classname:str,image_source:Any):
         if not self.siglip_manager:
             self.siglip_manager=SiglipManager()
-        if isinstance(imgage_source,str):
-            image_source=url_to_pil_image(imgage_source)
-        ontology= CaptionOntology({classname: classname})
-        self.ontology = ontology
-        results=self.predict(imgage_source)
-        results= self.get_largest_bbox(results)
-        if results:
-            image=image_source.crop(results.xyxy[0])
+        if isinstance(image_source,str):
+            image_source=url_to_pil_image(image_source)
+        results= self.get_bbox(classname,image_source)
+        print(results)
+        if results is not None and isinstance(results, np.ndarray):
+            image=image_source.crop(results)
             return self.siglip_manager.get_embeddings(image)
         return None
 
 if __name__ == "__main__":
-    owlv2=OWLv2("person")
-    print(owlv2.get_bbox("https://storage.googleapis.com/blushy-posts-maidentech/c2b16a3fd4ee4ca7724fb8b59f4e20f4572f5118310695657c50021f38bf52c0.jpg"))
+    owlv2=OWLv2()
+    print(owlv2.get_embeddings("person","https://storage.googleapis.com/blushy-posts-maidentech/c2b16a3fd4ee4ca7724fb8b59f4e20f4572f5118310695657c50021f38bf52c0.jpg"))
