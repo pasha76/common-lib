@@ -20,3 +20,7 @@ funcy
 sacremoses
 google-generativeai
 google-cloud-aiplatform
+supervision
+autodistill
+autodistill-owlv2
+roboflow

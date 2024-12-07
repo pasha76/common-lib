@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.3.37',
+    version='0.3.38',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*",'tests','tests.*']),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
@@ -26,7 +26,11 @@ setup(
        "funcy",
        "sacremoses",
        "google-generativeai",
-       "google-cloud-aiplatform"
+       "google-cloud-aiplatform",
+       "supervision",
+       "autodistill",
+        "autodistill-owlv2",
+        "roboflow"
     ],
     include_package_data=True,
     description='A utility package for common functionalities',
