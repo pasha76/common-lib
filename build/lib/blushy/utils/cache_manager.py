@@ -88,16 +88,22 @@ class FileSystemCache():
         try:
             with open(self.file_name, 'rb') as f:
                 return pickle.load(f)
-        except (IOError, EOFError):
-            print("Unable to open or read file")
+        except (IOError, EOFError) as e:
+            print(f"Error reading cache file: {str(e)}")  # More detailed error logging
+            if os.path.exists(self.file_name):
+                print(f"Cache file exists but is corrupted. File size: {os.path.getsize(self.file_name)}")
             return {}
 
     def __put_file_content(self, new_content):
         try:
-            with open(self.file_name, 'wb') as f:
+            # Write to temporary file first
+            temp_file = f"{self.file_name}.tmp"
+            with open(temp_file, 'wb') as f:
                 pickle.dump(new_content, f)
-        except IOError:
-            print("Unable to write to file")
+            # Then atomically rename it
+            os.replace(temp_file, self.file_name)
+        except IOError as e:
+            print(f"Error writing to cache file: {str(e)}")
 
     def __is_expired_row(self, row):
         # check expiration date and if passed 
