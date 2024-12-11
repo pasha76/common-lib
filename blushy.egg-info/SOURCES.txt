@@ -53,6 +53,7 @@ blushy/utils/siglip_manager.py
 blushy/utils/text_similarity_manager.py
 blushy/utils/translator.py
 blushy/utils/upload_labeler.py
+blushy/utils/upload_utils.py
 blushy/utils/vector_manager.py
 blushy/utils/pinterest/__init__.py
 blushy/utils/pinterest/config.py
