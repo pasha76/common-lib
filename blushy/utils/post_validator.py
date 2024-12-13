@@ -4,7 +4,8 @@ import numpy as np
 import random
 from google.oauth2 import service_account
 from icecream import ic
-
+from blushy.utils.siglip_manager import SiglipManager
+from blushy.utils.base import url_to_pil_image
 
 
 PATH= "/Users/tolgagunduz/Documents/projects/blushyv2/model-weigths"
@@ -18,6 +19,7 @@ if env.is_remote():
 class PostValidator:
     def __init__(self):
         self.model = YOLO(f"{PATH}/yolo11n-pose.pt")  # pretrained YOLO11n model
+        self.siglip_manager=SiglipManager()
 
     def check_pose_requirements(self,keypoints, confidence_threshold=0.5):
         """
@@ -106,4 +108,17 @@ class PostValidator:
         is_pose_right=self.check_pose_requirements(keypoints)
         is_pose_straight=self.is_person_straight(keypoints)
         print("right pose",is_pose_right,"straight pose",is_pose_straight)
-        return is_pose_right and is_pose_straight
+        return is_pose_right and is_pose_straight and self.is_adult_person(image_source) and self.is_women(image_source)
+    
+    def is_adult_person(self,image_source):
+        if isinstance(image_source,str):
+            image_source = url_to_pil_image(image_source)
+        result=self.siglip_manager.classify(image_source,["adult person","child"])
+        return result[0][0]>result[0][1]
+    
+    def is_women(self,image_source):
+        if isinstance(image_source,str):
+            image_source = url_to_pil_image(image_source)
+        result=self.siglip_manager.classify(image_source,["female","male"])
+        return result[0][0]>result[0][1]
+    
