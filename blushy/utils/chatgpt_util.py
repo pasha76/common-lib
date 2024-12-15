@@ -24,7 +24,10 @@ class Clothe(BaseModel):
     occasion_type: str
     pose_and_movement: str
     unique_features: List[str]  # Specify the type of items in the list
-    bounding_box:List[int]
+    seasonality:str
+    weather_appropriateness:str
+    fashion_trends:str
+    occasion:str
 
     def to_dict(self):
         return {
@@ -38,8 +41,78 @@ class Clothe(BaseModel):
             "occasion_type": self.occasion_type,
             "pose_and_movement": self.pose_and_movement,
             "unique_features": self.unique_features,
-            "bounding_box":self.bounding_box
+            "seasonality":self.seasonality,
+            "weather_appropriateness":self.weather_appropriateness,
+            "fashion_trends":self.fashion_trends,
+            "occasion":self.occasion
         }
+
+    def to_sentence(self):
+        try:
+            # Extract main attributes with fallbacks
+            clothe_type = self.clothe_type
+            color = ', '.join(self.color) if self.color else 'unspecified color'
+            style = self.style
+            pattern = self.pattern
+            fabric_type = self.fabric_type
+            shape_and_fit = self.shape_and_fit
+            occasion_type = self.occasion_type
+            pose_and_movement = self.pose_and_movement
+            unique_features = ', '.join(self.unique_features) if self.unique_features else 'no unique features'
+            seasonality = self.seasonality
+            weather = self.weather_appropriateness
+            trends = self.fashion_trends
+            occasion = self.occasion
+            detailed_description = self.detailed_description
+
+            # Create a description that emphasizes color and clothe_type through repetition
+            # and strategic placement at the beginning and end of sentences
+            description = (
+                f"This is a {color} {clothe_type}. "
+                f"The {clothe_type} features a {color} tone with {pattern} pattern. "
+                f"This {style} {clothe_type} is made from {fabric_type} with a {shape_and_fit} fit. "
+                f"Perfect for {occasion_type}, this {color} {clothe_type} {pose_and_movement}. "
+                f"Notable features include {unique_features}. "
+            )
+
+            # Add optional attributes if they exist
+            if seasonality:
+                description += f"Ideal for {seasonality}. "
+            if weather:
+                description += f"Suitable for {weather} weather. "
+            if trends:
+                description += f"Follows {trends} trends. "
+            if occasion:
+                description += f"Perfect for {occasion}. "
+            if detailed_description:
+                description += f"{detailed_description} "
+
+            return description.lower()  # Convert to lowercase for consistency
+
+        except Exception:
+            # Extract main attributes with fallbacks
+            clothe_type = self.clothe_type
+            color = ', '.join(self.color) if self.color else 'unspecified color'
+            style = self.style
+            pattern = self.pattern
+            fabric_type = self.fabric_type
+            shape_and_fit = self.shape_and_fit
+            occasion_type = self.occasion_type
+            pose_and_movement = self.pose_and_movement
+            unique_features = ', '.join(self.unique_features) if self.unique_features else 'no unique features'
+            detailed_description = self.detailed_description
+
+            # Create a description that emphasizes color and clothe_type through repetition
+            # and strategic placement at the beginning and end of sentences
+            description = (
+                f"This is a {color} {clothe_type}. "
+                f"The {clothe_type} features a {color} tone with {pattern} pattern. "
+                f"This {style} {clothe_type} is made from {fabric_type} with a {shape_and_fit} fit. "
+                f"Perfect for {occasion_type}, this {color} {clothe_type} {pose_and_movement}. "
+                f"Notable features include {unique_features}. "
+            )
+            return description.lower()
+    
 
 class Clothes(BaseModel):
     clothes: List[Clothe]
@@ -164,7 +237,10 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "occasion_type": "Casual wear",
         "pose_and_movement": "Perched stylishly on the face, the sunglasses enhance the confident pose of the wearer.",
         "unique_features": "Oversized frame, tinted lenses",
-        "bounding_box":[100,200,306,505]
+        "Seasonality":"Summer",
+        "Weather Appropriateness":"Sunny",
+        "Fashion Trends":"Y2K",
+        "Occasion":"Everyday wear",
     }},
     {{
         "clothe_type": "Tote Bag",
@@ -177,7 +253,10 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "occasion_type": "Everyday wear",
         "pose_and_movement": "Worn slung over one shoulder for practicality and style.",
         "unique_features": "Geometric design, multiple interior pockets",
-        "bounding_box":[24,120,240,600]
+        "Seasonality":"Summer",
+        "Weather Appropriateness":"Sunny",
+        "Fashion Trends":"Y2K",
+        "Occasion":"Everyday wear",
     }},
     {{
         "clothe_type": "Sneakers",
@@ -190,7 +269,10 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         "occasion_type": "Everyday wear",
         "pose_and_movement": "Shown at an angle to highlight comfort and style.",
         "unique_features": "Metallic gold finish, lace-up front",
-        "bounding_box":[56,85,124,432]
+        "Seasonality":"Summer",
+        "Weather Appropriateness":"Sunny",
+        "Fashion Trends":"Y2K",
+        "Occasion":"Everyday wear",
     }}
     ]
 
@@ -205,11 +287,14 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
             "pattern": "<any patterns or designs as string>",
             "fabric_type": "<material or fabric type as string>",
             "shape_and_fit": "<silhouette and fit as string>",
-            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation) as string>",
+            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation, party, dinner, casual, business meeting, sports event, etc.) as string>",
             "pose_and_movement": "<details about how the item is worn or displayed in the image>",
             "unique_features": ["<special feature>"...],
-            "bounding_box":[x1,y1,x2,y2]
-        }},
+            "seasonality":"<seasonality>",
+            "weather_appropriateness":"<weather appropriateness>",
+            "fashion_trends":"<fashion trends>",
+            "occasion":"<occasion>",
+            }},
         ...
         ]
         
