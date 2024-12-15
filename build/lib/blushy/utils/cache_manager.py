@@ -3,8 +3,8 @@ import os
 import datetime
 
 class FileSystemCache():
-    def __init__(self, folder_path):
-        self.file_name = os.path.join(folder_path, "cache.txt")
+    def __init__(self, folder_path,cache_name="cache.txt"):
+        self.file_name = os.path.join(folder_path, cache_name)
         # create file if not exist and initialize it with empty dict
         if not os.path.exists(self.file_name):
             with open(self.file_name, 'wb') as f:
