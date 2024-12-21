@@ -31,6 +31,7 @@ from blushy.db.models.comment import Comment
 from blushy.db.models.invitation import Invitation
 from blushy.db.models.items_colors import item_color_association
 from blushy.db.models.search_history import SearchHistory
+from blushy.db.models.cache import Cache
 
 
 

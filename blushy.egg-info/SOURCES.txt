@@ -9,6 +9,7 @@ blushy/db/__init__.py
 blushy/db/models/__init__.py
 blushy/db/models/ai_clothe_type.py
 blushy/db/models/base.py
+blushy/db/models/cache.py
 blushy/db/models/clicked_item.py
 blushy/db/models/comment.py
 blushy/db/models/country.py

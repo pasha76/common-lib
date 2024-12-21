@@ -33,6 +33,7 @@ class Post(Base):
     clicked_items = relationship('ClickedItem', back_populates='post')
     visited_posts = relationship('VisitPost', back_populates='post')  
     comments=relationship('Comment', back_populates='post')  
+    caches=relationship('Cache', back_populates='post')
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self,ignore_keys=[]):
