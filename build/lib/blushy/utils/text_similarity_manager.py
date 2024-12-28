@@ -24,11 +24,13 @@ class TextSimilarity:
         Encodes a given text into an embedding vector using the SentenceTransformer model.
         
         :param text: The input text to encode.
-        :return: A numpy array representing the embedding of the input text.
+        :return: A normalized numpy array representing the embedding of the input text.
         """
         # Encode the text and convert the tensor to a numpy array
         embedding = self.model.encode(text, convert_to_tensor=True, device=self.device)
         embedding = embedding.cpu().numpy()  # Convert tensor to numpy array
+        # Normalize the embedding to unit length
+        embedding = embedding / np.linalg.norm(embedding)
         return embedding
 
     def find_similar(self, query_text, corpus, top_k=5):
