@@ -240,3 +240,39 @@ class VectorManager:
         )
         
         return results
+
+    def batch_search_vector_with_fitlers(self, query_vectors, filter=None, limit=20, page=0):
+            """
+            Perform batch search for multiple query vectors with optional filtering
+            """
+            filters = []
+            if filter:
+                for k, v in filter:
+                    filters.append(models.FieldCondition(
+                        key=k,
+                        match=models.MatchValue(
+                            value=v,
+                        ),
+                    ))
+            
+            filter_obj = models.Filter(should=filters) if filters else None
+            
+            # Create batch search queries
+            search_queries = [
+                models.SearchRequest(
+                    vector=qv,
+                    filter=filter_obj,
+                    limit=limit,
+                    offset=page * limit,
+                    with_payload=True
+                )
+                for qv in query_vectors
+            ]
+            
+            # Execute batch search
+            results = self.client.search_batch(
+                collection_name=self.collection_name,
+                requests=search_queries,
+            )
+            
+            return results
