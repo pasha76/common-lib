@@ -241,38 +241,44 @@ class VectorManager:
         
         return results
 
-    def batch_search_vector_with_fitlers(self, query_vectors, filter=None, limit=20, page=0):
-            """
-            Perform batch search for multiple query vectors with optional filtering
-            """
-            filters = []
-            if filter:
-                for k, v in filter:
-                    filters.append(models.FieldCondition(
-                        key=k,
-                        match=models.MatchValue(
-                            value=v,
-                        ),
-                    ))
-            
-            filter_obj = models.Filter(should=filters) if filters else None
-            
-            # Create batch search queries
-            search_queries = [
-                models.SearchRequest(
-                    vector=qv,
-                    filter=filter_obj,
-                    limit=limit,
-                    offset=page * limit,
-                    with_payload=True
-                )
-                for qv in query_vectors
-            ]
-            
-            # Execute batch search
-            results = self.client.search_batch(
-                collection_name=self.collection_name,
-                requests=search_queries,
+    def batch_search_vector_with_filters(self, query_vectors, filter=None, limit=20, page=0):
+        """
+        Perform batch search for multiple query vectors with optional filtering.
+        The search will return vectors that match ANY of the provided filters (OR condition).
+        
+        Args:
+            query_vectors: List of query vectors to search for
+            filter: List of tuples containing (key, value) pairs for filtering
+            limit: Maximum number of results per query
+            page: Page number for pagination
+        """
+        filters = []
+        if filter:
+            # Expecting filter to be a list of (key, value) tuples
+            for k, v in filter:
+                filters.append(models.FieldCondition(
+                    key=k,
+                    match=models.MatchValue(
+                        value=v,
+                    ),
+                ))
+        
+        # Using should instead of must to implement OR logic between filters
+        filter_obj = models.Filter(should=filters) if filters else None
+        
+        # Create batch search queries
+        search_queries = [
+            models.SearchRequest(
+                vector=qv,
+                filter=filter_obj,
+                limit=limit,
+                offset=page * limit,
+                with_payload=True
             )
-            
-            return results
+            for qv in query_vectors
+        ]
+        
+        return self.client.search_batch(
+            collection_name=self.collection_name,
+            requests=search_queries,
+        )
