@@ -252,19 +252,28 @@ class VectorManager:
             limit: Maximum number of results per query
             page: Page number for pagination
         """
-        filters = []
+        should_filters = []
+        must_filters = []
         if filter:
             # Expecting filter to be a list of (key, value) tuples
-            for k, v in filter:
-                filters.append(models.FieldCondition(
-                    key=k,
-                    match=models.MatchValue(
-                        value=v,
-                    ),
-                ))
+            for k, v ,c in filter:
+                if c=="should":
+                    should_filters.append(models.FieldCondition(
+                        key=k,
+                        match=models.MatchValue(
+                            value=v,
+                        ),
+                    ))
+                else:
+                    must_filters.append(models.FieldCondition(
+                        key=k,
+                        match=models.MatchValue(
+                            value=v,
+                        ),
+                    ))
         
         # Using should instead of must to implement OR logic between filters
-        filter_obj = models.Filter(should=filters) if filters else None
+        filter_obj = models.Filter(should=should_filters,must=must_filters) 
         
         # Create batch search queries
         search_queries = [
