@@ -113,12 +113,19 @@ class PostValidator:
     def is_adult_person(self,image_source):
         if isinstance(image_source,str):
             image_source = url_to_pil_image(image_source)
-        result=self.siglip_manager.classify(image_source,["adult person","child"])
-        return result[0][0]>result[0][1]
+        result=self.siglip_manager.classify(image_source,["woman","man","child"])
+        print(result)
+        return result[0][0]>0.5
     
     def is_women(self,image_source):
         if isinstance(image_source,str):
             image_source = url_to_pil_image(image_source)
         result=self.siglip_manager.classify(image_source,["female","male"])
         return result[0][0]>result[0][1]
+    
+    def is_men(self,image_source):
+        if isinstance(image_source,str):
+            image_source = url_to_pil_image(image_source)
+        result=self.siglip_manager.classify(image_source,["male","female"])
+        return result[0][0]>result[0][1] and result[0][0]>0.9
     
