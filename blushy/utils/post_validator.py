@@ -108,13 +108,13 @@ class PostValidator:
         is_pose_right=self.check_pose_requirements(keypoints)
         is_pose_straight=self.is_person_straight(keypoints)
         print("right pose",is_pose_right,"straight pose",is_pose_straight)
-        return is_pose_right and is_pose_straight and self.is_adult_person(image_source) and self.is_women(image_source)
+        return is_pose_right and is_pose_straight and self.is_adult_person(image_source) #and self.is_women(image_source)
     
     def is_adult_person(self,image_source):
         if isinstance(image_source,str):
             image_source = url_to_pil_image(image_source)
         result=self.siglip_manager.classify(image_source,["woman","man","child"])
-        print(result)
+        print("adult woman",result[0][0]>0.5)
         return result[0][0]>0.5
     
     def is_women(self,image_source):

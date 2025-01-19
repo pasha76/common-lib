@@ -281,7 +281,7 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
         [
         {{
             "clothe_type": "{clothe_types}",
-            "detailed_description": "<detailed e-commerce style visually accurate description as string>",
+            "detailed_description": "<detailed e-commerce style visually accurate description including shape and details as string>",
             "style": "<overall style as string>",
             "color": ["<dominant color>","<secondary color>"...],
             "pattern": "<any patterns or designs as string>",
