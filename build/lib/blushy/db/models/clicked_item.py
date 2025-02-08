@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
+from traitlets import default
 
 
 class ClickedItem(Base):
@@ -11,6 +12,8 @@ class ClickedItem(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    preview = Column(Integer,default=0)
+    visit = Column(Integer,default=0)
     link = Column(String(800),nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
