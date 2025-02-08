@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from blushy.db.models import Base
 from sqlalchemy import inspect
-from traitlets import default
 
 
 class ClickedItem(Base):
