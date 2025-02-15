@@ -202,102 +202,48 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
     # Define the improved prompt
     prompt = f"""
     
-    You are tasked with describing the visible clothing items and accessories (including glasses, shoes, and bags) in a photo for an e-commerce platform. The goal is to provide extremely detailed descriptions of each visible item. Your descriptions should be specific, capturing any unique features, design elements, and distinct details that differentiate these items from similar products. Focus on the following aspects:
-    
-    1. **Clothing Type**: Identify and name only the visible clothing items and accessories. For example: "Maxi Dress", "Aviator Sunglasses", "Sneakers", "Crossbody Bag", etc.
-    2. **Detailed Description**: Write a comprehensive description that could be used for an e-commerce listing. Include key details such as the cut, shape, fit, any special features (e.g., ruffles, embroidery, zippers, etc.), and pose-related details (e.g., how the clothing drapes or fits in the image, such as a billowing skirt or snug jacket). This description should include a minimum of 75 words.
-    3. **Style**: Classify the overall style of the item (e.g., casual, formal, sporty, elegant, vintage, streetwear, etc.). Describe any fashion trends or design influences.
-    4. **Color**: Identify the dominant and any secondary colors. If the item has a distinct color contrast, gradient, or color-blocking, include those details.
-    5. **Pattern**: Mention any visible patterns (e.g., stripes, florals, animal print, graphics, geometric designs, etc.), or specify if the item is solid.
-    6. **Fabric Type**: Identify the fabric or material (e.g., cotton, leather, denim, silk, polyester). If the texture is visible (e.g., ribbed, smooth, quilted), describe it.
-    7. **Shape and Fit**: Specify the item's silhouette (e.g., fitted, oversized, A-line, cropped) and the type of fit (e.g., slim, loose, tailored). If accessories like belts or ties adjust the fit, mention them.
-    8. **Fit Type**: Provide specific fit types like "Slim", "Relaxed", or "Skinny".
-    9. **Seasonality**: Describe the season this item is most appropriate for (e.g., Summer, Winter).
-    10. **Weather Appropriateness**: Suggest the type of weather the item is suited for (e.g., Rainy, Cold Weather).
-    11. **Color Family**: Categorize the colors into broader families (e.g., Neutrals, Brights).
-    12. **Occasion**: Suggest appropriate occasions for wearing the item (e.g., casual, business, party, athletic).
-    13. **Occasion Type**: Describe specific occasion types like "Beach Vacation", "Weddings", etc.
-    14. **Fashion Trends**: Identify any specific fashion trends the item fits into (e.g., Y2K, Streetwear).
-    15. **Pose and Movement**: If relevant, describe how the item is worn or displayed in the image (e.g., how a dress flows, how shoes fit, or the way glasses are perched on the nose).
-    16. **Unique Features**: Highlight any standout details that make the item unique, such as embellishments, fastenings, stitching, or specific cuts (e.g., asymmetrical hems, double-breasted jackets, statement sleeves).
-   
+    You are tasked with describing the visible clothing items and accessories (including glasses, shoes, and bags) in a photo for an e-commerce platform. The goal is to provide extremely detailed descriptions of each visible item in a manner that conveys tactile, visual, and spatial details as if explaining to a person who cannot see. Each description must be highly detailed, outlining all visible features and characteristics to allow a blind person to mentally visualize the item. Do not use personal adverbs such as “I,” “you,” or “we.” Instead, use objective, descriptive language focused solely on the item’s attributes.
 
-    Example output:
+    The description for each item must include the following aspects:
+        1.	Clothing Type: Identify and name only the visible clothing items and accessories (e.g., “Maxi Dress”, “Aviator Sunglasses”, “Sneakers”, “Crossbody Bag”).
+        2.	Detailed Description: Provide a comprehensive, e-commerce style description that includes the cut, shape, fit, and any special features (e.g., ruffles, embroidery, zippers). Describe how the clothing drapes, its contours, and any tactile details such as texture and stitching. The description should contain a minimum of 75 words.
+        3.	Style: Classify the overall style (e.g., casual, formal, sporty, elegant, vintage, streetwear) and mention any relevant fashion trends or design influences.
+        4.	Color: Identify the dominant and any secondary colors, describing any color contrasts, gradients, or color-blocking effects.
+        5.	Pattern: Mention any visible patterns (e.g., stripes, florals, animal print, graphics, geometric designs) or indicate if the item is a solid color.
+        6.	Fabric Type: Specify the material (e.g., cotton, leather, denim, silk, polyester) and describe the texture (e.g., ribbed, smooth, quilted) to convey a tactile sense.
+        7.	Shape and Fit: Define the silhouette (e.g., fitted, oversized, A-line, cropped) and describe the fit (e.g., slim, loose, tailored). Include details such as the effect of belts or ties on the overall fit.
+        8.	Fit Type: Clearly indicate specific fit types like “Slim,” “Relaxed,” or “Skinny.”
+        9.	Seasonality: Describe the season the item is best suited for (e.g., Summer, Winter).
+        10.	Weather Appropriateness: Suggest the type of weather (e.g., Rainy, Cold Weather) for which the item is ideal.
+        11.	Color Family: Categorize the colors into broader groups (e.g., Neutrals, Brights).
+        12.	Occasion: Suggest appropriate occasions for wearing the item (e.g., casual, business, party, athletic).
+        13.	Occasion Type: Specify particular occasions such as “Beach Vacation,” “Weddings,” etc.
+        14.	Fashion Trends: Identify any specific fashion trends that the item aligns with (e.g., Y2K, Streetwear).
+        15.	Pose and Movement: Explain how the item is positioned, how it drapes or flows, and any visible movement in the image.
+        16.	Unique Features: Highlight standout details (e.g., embellishments, fastenings, distinctive stitching, asymmetrical hems, double-breasted designs).
 
-    [
-    {{
-        "clothe_type": "Sunglasses",
-        "detailed_description": "These oversized sunglasses feature a bold frame with a glossy finish that instantly draws attention. The lenses are tinted, providing UV protection while adding an air of mystery. The wide arms of the sunglasses complement the face's shape and provide a stylishly sophisticated look. Perfect for sunny days, they add a trendy flair to any outfit.",
-        "style": "Fashion-forward",
-        "color": ["Black","white"],
-        "pattern": "Solid",
-        "fabric_type": "Plastic frame",
-        "shape_and_fit": "Oversized frame",
-        "fit_type": "Loose",
-        "occasion_type": "Casual wear",
-        "pose_and_movement": "Perched stylishly on the face, the sunglasses enhance the confident pose of the wearer.",
-        "unique_features": "Oversized frame, tinted lenses",
-        "Seasonality":"Summer",
-        "Weather Appropriateness":"Sunny",
-        "Fashion Trends":"Y2K",
-        "Occasion":"Everyday wear",
-    }},
-    {{
-        "clothe_type": "Tote Bag",
-        "detailed_description": "A spacious tote bag with a minimalist geometric design in muted tones. The durable canvas with leather trims ensures practicality and style, while the interior features multiple pockets for organization.",
-        "style": "Everyday Classic",
-        "color": ["Off-white with tan accents","yellow"],
-        "pattern": "Geometric",
-        "fabric_type": "Canvas with leather trims",
-        "shape_and_fit": "Spacious tote with shoulder straps",
-        "occasion_type": "Everyday wear",
-        "pose_and_movement": "Worn slung over one shoulder for practicality and style.",
-        "unique_features": "Geometric design, multiple interior pockets",
-        "Seasonality":"Summer",
-        "Weather Appropriateness":"Sunny",
-        "Fashion Trends":"classic,Y2K",
-        "Occasion":"Everyday wear",
-    }},
-    {{
-        "clothe_type": "Sneakers",
-        "detailed_description": "Metallic gold sneakers with a rounded toe and lace-up front. They feature a cushioned insole for comfort and a sleek design for casual and athletic wear.",
-        "style": "Sporty Casual",
-        "color": ["Gold"],
-        "pattern": "Solid",
-        "fabric_type": "Synthetic",
-        "shape_and_fit": "Casual fit, cushioned insole",
-        "occasion_type": "Everyday wear",
-        "pose_and_movement": "Shown at an angle to highlight comfort and style.",
-        "unique_features": "Metallic gold finish, lace-up front",
-        "Seasonality":"Summer",
-        "Weather Appropriateness":"Sunny",
-        "Fashion Trends":"Y2K,minimalist",
-        "Occasion":"Everyday wear",
-    }}
-    ]
-
-
-    Your response must follow this format, structured as a JSON object:
-        [
-        {{
-            "clothe_type": "{clothe_types}",
-            "detailed_description": "<detailed e-commerce style visually accurate description including shape and details as string>",
-            "style": "<overall style as string>",
-            "color": ["<dominant color>","<secondary color>"...],
-            "pattern": "<any patterns or designs as string>",
-            "fabric_type": "<material or fabric type as string>",
-            "shape_and_fit": "<silhouette and fit as string>",
-            "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation, party, dinner, casual, business meeting, sports event, etc.) as string>",
-            "pose_and_movement": "<details about how the item is worn or displayed in the image>",
-            "unique_features": ["<special feature>"...],
-            "seasonality":"<seasonality> as string",
-            "weather_appropriateness":"<weather appropriateness> as string",
-            "fashion_trends":"<fashion trend>,<fashion trend>,<fashion trend> as string",
-            "occasion":"<occasion> as string",
+        The final output must be structured as a JSON array of objects, each representing one item. The JSON structure should be as follows:
+            [
+            {{
+                "clothe_type": "{clothe_types}",
+                "detailed_description": "<detailed e-commerce style visually and tactically accurate description including shape, texture, and other physical details as a string>",
+                "style": "<overall style as string>",
+                "color": ["<dominant color>", "<secondary color>", "..."],
+                "pattern": "<any patterns or designs as string>",
+                "fabric_type": "<material or fabric type as string>",
+                "shape_and_fit": "<silhouette and fit as string>",
+                "occasion_type": "<specific occasion type (e.g., Weddings, Beach Vacation, party, dinner, casual, business meeting, sports event, etc.) as string>",
+                "pose_and_movement": "<detailed description of how the item is worn or displayed, emphasizing its drape, flow, and tactile characteristics>",
+                "unique_features": ["<special feature>", "..."],
+                "seasonality": "<seasonality as string>",
+                "weather_appropriateness": "<weather appropriateness as string>",
+                "fashion_trends": "<fashion trend>,<fashion trend>,<fashion trend> as string>",
+                "occasion": "<occasion as string>"
             }},
-        ...
-        ]
-        
+            ...
+            ]
+
+            All descriptions should be free of personal adverbs and written in a neutral, descriptive tone to ensure the details are vivid and comprehensible to someone who cannot see the item.
         """
 
     # Call the function to analyze the image
@@ -321,5 +267,8 @@ def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,
 
 
 if __name__=="__main__":
+    
+    
+    creds=service_account.Credentials.from_service_account_info(None)
   
-    describe_image_by_chatgpt("https://i.pinimg.com/736x/5f/0d/1a/5f0d1a28be215d45e342fcc39ea92b07.jpg",credentials=None)
+    describe_image_by_chatgpt("https://i.pinimg.com/736x/5f/0d/1a/5f0d1a28be215d45e342fcc39ea92b07.jpg",credentials=creds)
