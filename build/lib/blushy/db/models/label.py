@@ -28,6 +28,7 @@ class Label(Base):
     label_info = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
     image_embedding= Column(Text, nullable=True)  # Store as JSON string in a TEXT field
     description = Column(Text, nullable=True)  # Store as JSON string in a TEXT field
+    description_tr=Column(Text, nullable=True)
 
 
     def upload_to_vector_db(self,vector_db):

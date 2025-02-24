@@ -120,6 +120,13 @@ class Item(Base):
                 return self.title and self.price > 0 and self.item_id and self.link
 
             case ItemStatus.TITLE_CLASSIFIED:
+                assert self.title,"title missing"
+                assert self.price>0,"Price missing"
+                assert self.item_id, "Item_id missing"
+                assert self.ai_clothe_type_id, "ai_clothe_type_id misssing"
+                assert self.image_description,"image description missing"
+                assert self.blushy_clothe_type,"clothe type missing"
+
                 if self.master_status_id != ItemStatus.CREATED_IMAGE_DESCRIPTION.value:
                     return False
                 return self.title and self.price > 0 and self.item_id and self.link and self.ai_clothe_type_id and self.image_description and self.blushy_clothe_type

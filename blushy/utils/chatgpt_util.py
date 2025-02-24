@@ -132,7 +132,7 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=8192,credentials=Non
     )
 
 
-    model = GenerativeModel("gemini-1.5-flash-002")
+    model = GenerativeModel("gemini-2.0-flash-001")
 
     generation_config = {
         "temperature": 0.,
@@ -167,21 +167,7 @@ def analyze_image_by_chatgpt_json(image, prompt, max_tokens=8192,credentials=Non
         raise ValueError(f"Failed to parse Gemini response as JSON: {e}")
 
 
-def old_analyze_image_by_chatgpt_json(messages, max_tokens=1800):
-    # Setting up OpenAI API client
-    api_key = os.environ["CHATGPT_API_KEY"]
-    client = OpenAI(api_key=api_key)
 
-    # Calling GPT to get the detailed description
-    completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
-        messages=messages,
-        max_tokens=max_tokens,
-        response_format=Clothes,
-    )
-    
-    # Returning the parsed clothes descriptions
-    return completion.choices[0].message.parsed.clothes
 
 def describe_image_by_chatgpt(image_url: str,clothe_types:list=None,styles=None,colors=None,credentials=None):
     
