@@ -14,9 +14,10 @@ class TextSimilarity:
         """
         self.device = device
         if env.is_remote():
-            cache_path= "/volumes/model-weights/model-weigths/"
-            self.model = SentenceTransformer(model_name,  device=self.device, cache_folder=cache_path)
+            model_name= "/volumes/model-weights/model-weigths/match_fine_tuned_model"
+            self.model = SentenceTransformer(model_name,  device=self.device)
         else:
+            model_name="/Users/tolgagunduz/Documents/projects/blushyv2/scripts/output/match_fine_tuned_model"
             self.model = SentenceTransformer(model_name, device=self.device)
 
     def encode_text(self, text):
