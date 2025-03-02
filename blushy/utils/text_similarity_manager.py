@@ -14,7 +14,6 @@ class TextSimilarity:
         """
         self.device = device
         if env.is_remote():
-            model_name= "/volumes/model-weights/model-weigths/match_fine_tuned_model"
             self.model = SentenceTransformer(model_name,  device=self.device)
         else:
             model_name="/Users/tolgagunduz/Documents/projects/blushyv2/scripts/output/match_fine_tuned_model"
