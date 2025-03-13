@@ -19,11 +19,7 @@ class TextSimilarity:
             else:
                 self.model = SentenceTransformer(model_name,  device=self.device,cache_folder="/volumes/model-weights/model-weigths/")
         else:
-            if model_name.startswith("/"):
-                model_name="/Users/tolgagunduz/Documents/projects/blushyv2/scripts/output/match_fine_tuned_model"
-                self.model = SentenceTransformer(model_name, device=self.device)
-            else:
-                self.model = SentenceTransformer(model_name, device=self.device)
+            self.model = SentenceTransformer(model_name, device=self.device)
         # After loading your SentenceTransformer model:
         self.model[0].auto_model.config.output_attentions = True
         self.model[0].auto_model.config.attn_implementation = "eager"
