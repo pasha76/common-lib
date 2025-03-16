@@ -8,6 +8,7 @@ blushy.egg-info/top_level.txt
 blushy/db/__init__.py
 blushy/db/models/__init__.py
 blushy/db/models/ai_clothe_type.py
+blushy/db/models/banner.py
 blushy/db/models/base.py
 blushy/db/models/cache.py
 blushy/db/models/clicked_item.py

@@ -1,17 +1,20 @@
-from qdrant_client.models import PointStruct, QueryRequest
+from qdrant_client.models import PointStruct, QueryRequest,NamedVector
 from qdrant_client.models import Distance, VectorParams, MatchValue, Filter, FieldCondition, MatchAny
 from qdrant_client import QdrantClient, models
+from qdrant_client.models import SearchRequest, SearchParams, Filter, FieldCondition, MatchValue
 import os
 from typing import List, Dict, Union, Optional
 
 class VectorManager:
-    def __init__(self, collection_name="vendors", vector_size=768, distance=Distance.COSINE):
+    def __init__(self, collection_name="vendors", vector_size=768, distance=Distance.COSINE,config=None):
         url = os.getenv('QDRANT_URL')
         api_key = os.getenv('QDRANT_API_KEY')
+  
         self.client = QdrantClient(url=url, api_key=api_key, timeout=10)
         self.collection_name = collection_name
         self.vector_size = vector_size
         self.distance = distance
+        self.config=config
 
     def create_index(self, collection_name, field_name, field_schema):
         self.client.create_payload_index(
@@ -20,10 +23,16 @@ class VectorManager:
             field_schema=field_schema)
 
     def recreate_collection(self):
-        self.client.recreate_collection(
-            collection_name=self.collection_name,
-            vectors_config=VectorParams(size=self.vector_size, distance=self.distance),
-        )
+        if self.config is None:
+            self.client.recreate_collection(
+                collection_name=self.collection_name,
+                vectors_config=VectorParams(size=self.vector_size, distance=self.distance),
+            )
+        else:
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=self.config,
+            )
 
     def update_metadata(self, idx, metadata):
         self.client.set_payload(
@@ -269,3 +278,99 @@ class VectorManager:
         # Fetch clicked post IDs from Qdrant metadata or another database
         # This function should return a list of clicked post IDs
         return []
+    
+ 
+ 
+
+    def hybrid_search(self,
+        query_text_vector, 
+        query_image_vector, 
+        text_weight=0.7,    # For future use; not applied natively yet
+        image_weight=0.3,   # For future use; not applied natively yet
+        master_gender_id=None, 
+        country_id=None, 
+        master_clothe_type_id=None, 
+        limit=30
+        ):
+        """
+        Perform hybrid search with filtering:
+        1. Retrieve results using both text and image embeddings.
+        2. Apply filters on gender, country, and clothing type.
+        
+        NOTE: Currently, the client does not support native score adjustment for multi-vector
+        queries, so text_weight and image_weight are not applied automatically.
+        """
+        # Construct filters
+        filters = []
+        if master_gender_id is not None:
+            filters.append(FieldCondition(key="master_gender_id", match=MatchValue(value=master_gender_id)))
+        if country_id is not None:
+            filters.append(FieldCondition(key="country_id", match=MatchValue(value=country_id)))
+        if master_clothe_type_id is not None:
+            filters.append(FieldCondition(key="master_clothe_type_id", match=MatchValue(value=master_clothe_type_id)))
+        filter_obj = Filter(must=filters) if filters else None
+
+        # Create a SearchRequest using multi-vector query.
+        # The keys "text" and "image" must match the names used during upsert.
+        search_request = models.SearchRequest(
+            vector={"text": query_text_vector, "image": query_image_vector},
+            filter=filter_obj,
+            limit=limit,
+            with_payload=True
+        )
+        
+        # Use search_batch with a single SearchRequest to perform multi-vector search.
+        search_results_batch = self.client.search_batch(
+            collection_name=self.collection_name,
+            requests=[search_request]
+        )
+        
+        # Extract results from the single query in the batch
+        if search_results_batch and len(search_results_batch) > 0:
+            search_results = search_results_batch[0]
+        else:
+            search_results = []
+        
+        return [hit.id for hit in search_results]
+    
+
+    def upsert_multivector_example(self, ids: List[int], image_vectors: List[float], text_vectors: List[float]):
+        """
+        Upsert a point with multiple vectors using input parameters.
+        
+        Parameters:
+        - id: Unique identifier for the point.
+        - image_vector: List of floats representing the image embedding.
+        - text_vector: List of floats representing the text embedding.
+        - text_sparse (optional): A dictionary with keys "indices" and "values" for the sparse text vector.
+            If not provided, a default sparse vector will be used.
+        
+        Example:
+            text_sparse = {
+                "indices": [1, 3, 5, 7],
+                "values": [0.1, 0.2, 0.3, 0.4]
+            }
+            vector_manager.upsert_multivector_example(
+                id=1,
+                image_vector=[0.9, 0.1, 0.1, 0.2],
+                text_vector=[0.4, 0.7, 0.1, 0.8, 0.1],
+                text_sparse=text_sparse
+            )
+        """
+     
+        
+        points = []
+        for id, image, text in zip(ids,image_vectors, text_vectors):
+            point = models.PointStruct(
+                id=id,
+                vector={
+                    "image": image,
+                    "text": text,
+                },
+            )
+            points.append(point)
+        
+        self.client.upsert(
+            collection_name=self.collection_name,
+            points=points,
+        )
