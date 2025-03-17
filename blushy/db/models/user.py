@@ -49,6 +49,7 @@ class User(Base):
     invitations=relationship('Invitation', back_populates='user')
     kvkk_accepted = Column(Boolean, default=False)
     kvkk_accepted_at = Column(DateTime)
+    complaints=relationship('Complaint', back_populates='user')
     def calculate_fashion_score(self):
         if not self.posts:
             return 0

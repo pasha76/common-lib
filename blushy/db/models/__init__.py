@@ -33,7 +33,7 @@ from blushy.db.models.items_colors import item_color_association
 from blushy.db.models.search_history import SearchHistory
 from blushy.db.models.cache import Cache
 from blushy.db.models.banner import Banner
-
+from blushy.db.models.complaint import Complaint
 
 
 
