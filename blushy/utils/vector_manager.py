@@ -66,10 +66,12 @@ class VectorManager:
         # Retrieve visited and clicked post IDs from metadata
      
 
-        return self.client.recommend(
+        result= self.client.recommend(
             self.collection_name,
             positive=positive_label_ids,
             negative=negative_label_ids,
+            with_payload=True,
+            with_vectors=False,
             strategy=models.RecommendStrategy.BEST_SCORE,
             query_filter=models.Filter(
                 must=[
@@ -87,6 +89,11 @@ class VectorManager:
             limit=limit,
             offset=page * limit
         )
+        results=[]
+        for item in result:
+            results.append(item.payload["post_id"])
+        return results,(limit+1)*page
+    
 
     def search_by_batch(self, query_vectors):
         search_queries = [
@@ -269,16 +276,7 @@ class VectorManager:
             requests=search_queries,
         )
 
-    def get_user_visited_posts(self, user_id):
-        # Fetch visited post IDs from Qdrant metadata or another database
-        # This function should return a list of visited post IDs
-        return []
 
-    def get_user_clicked_posts(self, user_id):
-        # Fetch clicked post IDs from Qdrant metadata or another database
-        # This function should return a list of clicked post IDs
-        return []
-    
  
  
 
@@ -374,3 +372,63 @@ class VectorManager:
             collection_name=self.collection_name,
             points=points,
         )
+
+
+    def scroll(self, filter=None, offset=0,limit=20):
+        result, next_page_offset = self.client.scroll(
+            collection_name=self.collection_name,
+            scroll_filter=filter,
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+            offset=offset
+        )
+        results=[]
+        for item in result:
+            results.append(item.payload["post_id"])
+        return results, next_page_offset
+
+
+if __name__ == "__main__":
+    import os
+    from blushy.utils.vector_manager import VectorManager
+    from blushy.db import Label,get_session,VisitPost,ClickedItem
+    os.environ["QDRANT_URL"] = "https://57bae1dd-4983-40da-8fc4-337da62dd839.us-east4-0.gcp.cloud.qdrant.io:6333"
+    os.environ["QDRANT_API_KEY"] = "iiVKB5Zr8_d1GbUoLTl5-z5yHQAl4gMIpqjWbbbFWMtxfQIiZ2uLag"
+        # Initialize VectorManager
+    vector_manager = VectorManager(collection_name="search")
+    
+    # Test scroll functionality
+    try:
+        # Get first batch
+        result, next_page_offset = vector_manager.recommend(positive_label_ids=[34251],negative_label_ids=[],master_gender_id=1,country_id=1,limit=10)
+        print(f"First batch - Found {len(result)} items")
+        
+        # Print first batch details
+        for item in result:
+            print(f"ID: {item}")
+            print("---")
+        
+        # Continue scrolling if there are more items
+        while next_page_offset:
+            result, next_page_offset = vector_manager.recommend(
+                positive_label_ids=[],
+                negative_label_ids=[],
+                master_gender_id=1
+                ,country_id=1,
+                limit=10, 
+                offset=next_page_offset
+            )
+            print(f"Next batch - Found {len(result)} items")
+            
+            # Print batch details
+            for item in result:
+                print(f"ID: {item}")
+                print("---")
+            
+            # Optional: break after a few iterations for testing
+            if len(result) < 10:  # Less than limit means we're at the end
+                break
+                
+    except Exception as e:
+        print(f"Error during scroll test: {str(e)}")
