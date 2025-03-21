@@ -4,6 +4,8 @@ from qdrant_client import QdrantClient, models
 from qdrant_client.models import SearchRequest, SearchParams, Filter, FieldCondition, MatchValue
 import os
 from typing import List, Dict, Union, Optional
+import numpy as np
+from blushy.utils.base import deserialize_embedding
 
 class VectorManager:
     def __init__(self, collection_name="vendors", vector_size=768, distance=Distance.COSINE,config=None):
@@ -388,47 +390,71 @@ class VectorManager:
             results.append(item.payload["post_id"])
         return results, next_page_offset
 
+    def cosine_similarity(self,a, b):
+        """Compute cosine similarity between two vectors."""
+        a = np.array(a, dtype=float).flatten()
+        b = np.array(b, dtype=float).flatten()
+        print("Shape of a:", a.shape)  # Expect (1152,)
+        print("Shape of b:", b.shape)  # Expect (1152,)
+        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+    def search_and_rerank(self, 
+                        query_text_embedding: list, 
+                        query_image_embedding: list,
+                        filter_dict: dict = None,
+                        limit: int = 30,page:int=0):
+        
+        # Build filters from the provided dictionary
+        filters = []
+        if filter_dict:
+            for k, v in filter_dict.items():
+                filters.append(
+                    FieldCondition(
+                        key=k,
+                        match=MatchValue(value=v)
+                    )
+                )
+        # Create a Filter object if there are any filter conditions
+        query_filter = Filter(must=filters) if filters else None
+
+        # Step 1: Retrieve top candidates using text embeddings.
+        text_results = self.client.search(
+            collection_name=self.collection_name,
+            query_vector=query_text_embedding,
+            query_filter=query_filter,
+            limit=limit,
+            offset=page * limit
+        )
+        
+        # Step 2: Re-rank the results using image embeddings.
+        # Assume that each result has a payload with an "image_embedding" field.
+        results_with_score = []
+        for result in text_results:
+            candidate_image_embedding =deserialize_embedding(result.payload.get("image_embedding"))
+            image_score = self.cosine_similarity(candidate_image_embedding, query_image_embedding)
+            results_with_score.append({
+                "result": result,
+                "image_score": image_score
+            })
+        
+        # Sort the list by image_score in descending order.
+        results_with_score = sorted(results_with_score, key=lambda r: r["image_score"], reverse=True)
+        results_with_score = [r["result"] for r in results_with_score]
+        return results_with_score
 
 if __name__ == "__main__":
     import os
     from blushy.utils.vector_manager import VectorManager
     from blushy.db import Label,get_session,VisitPost,ClickedItem
+    from blushy.utils.base import deserialize_embedding
     os.environ["QDRANT_URL"] = "https://57bae1dd-4983-40da-8fc4-337da62dd839.us-east4-0.gcp.cloud.qdrant.io:6333"
     os.environ["QDRANT_API_KEY"] = "iiVKB5Zr8_d1GbUoLTl5-z5yHQAl4gMIpqjWbbbFWMtxfQIiZ2uLag"
         # Initialize VectorManager
-    vector_manager = VectorManager(collection_name="search")
+    vector_manager = VectorManager(collection_name="items_new")
+    session=get_session()
+    label=session.query(Label).filter(Label.id==34253).first()
+    embd=deserialize_embedding(label.text_embedding)
+    embd_image=deserialize_embedding(label.image_embedding)
+    print(vector_manager.search_and_rerank(embd,embd_image,filter_dict={"master_clothe_type_id":100000}, limit=30,page=0))
     
-    # Test scroll functionality
-    try:
-        # Get first batch
-        result, next_page_offset = vector_manager.recommend(positive_label_ids=[34251],negative_label_ids=[],master_gender_id=1,country_id=1,limit=10)
-        print(f"First batch - Found {len(result)} items")
-        
-        # Print first batch details
-        for item in result:
-            print(f"ID: {item}")
-            print("---")
-        
-        # Continue scrolling if there are more items
-        while next_page_offset:
-            result, next_page_offset = vector_manager.recommend(
-                positive_label_ids=[],
-                negative_label_ids=[],
-                master_gender_id=1
-                ,country_id=1,
-                limit=10, 
-                offset=next_page_offset
-            )
-            print(f"Next batch - Found {len(result)} items")
-            
-            # Print batch details
-            for item in result:
-                print(f"ID: {item}")
-                print("---")
-            
-            # Optional: break after a few iterations for testing
-            if len(result) < 10:  # Less than limit means we're at the end
-                break
-                
-    except Exception as e:
-        print(f"Error during scroll test: {str(e)}")
+    
