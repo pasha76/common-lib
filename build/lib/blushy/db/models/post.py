@@ -36,6 +36,7 @@ class Post(Base):
     caches=relationship('Cache', back_populates='post')
     created_at = Column(DateTime, default=datetime.utcnow)
     complaints=relationship('Complaint', back_populates='post')
+    cache=relationship('Cache', back_populates='post')
 
     def to_dict(self,ignore_keys=[]):
         return {c.key: getattr(self, c.key)

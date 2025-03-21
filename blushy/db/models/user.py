@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(String(300), unique=True, nullable=False)
     username = Column(String(80), unique=True, nullable=True, index=True)
+    notification_id=Column(String(300), unique=False, nullable=True)
     instagram_id = Column(String(80), unique=True, nullable=True, index=True)
     access_token=Column(String(300), unique=False, nullable=True)
     email = Column(String(120), unique=False, nullable=True)

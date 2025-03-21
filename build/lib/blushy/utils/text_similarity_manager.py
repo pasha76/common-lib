@@ -63,6 +63,8 @@ class TextSimilarity:
         similar_texts = sorted(similar_texts, key=lambda x: x[1], reverse=True)
 
         return similar_texts
+    
+
 
 # Example usage
 if __name__ == "__main__":
