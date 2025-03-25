@@ -86,7 +86,7 @@ class ImageEmbeddingManager(SiglipManager):
     def __init__(self, input_dim=1152, embedding_dim=128, device=None):
         super().__init__()
         if env.is_remote():
-            model_path = "/volumes/model-weights/model-weigths/region_embedding_triplet_network.pt"
+            model_path = "model-weights/model-weigths/region_embedding_triplet_network.pt"
         else:
             model_path = "/Users/tolgagunduz/Documents/projects/blushyv2/trainer/image_reranking/region_embedding_triplet_network.pt"
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
