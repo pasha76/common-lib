@@ -1,6 +1,5 @@
-
-from transformers import AutoProcessor, AutoModel
 from beam import env
+from transformers import AutoProcessor, AutoModel
 import torch.nn.functional as F
 import numpy as np
 import torch

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.3.88',
+    version='0.3.89',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*",'tests','tests.*']),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
