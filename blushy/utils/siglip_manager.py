@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from blushy.utils.base import url_to_pil_image
 import json
-
+from blushy.utils.base import deserialize_embedding
 
 class SiglipManager:
 
@@ -98,6 +98,11 @@ class ImageEmbeddingManager(SiglipManager):
         # Get the original embedding using parent method
         original_embedding = super().get_embeddings(image)
         # Convert to torch tensor and project
+        return self.get_embeddings_from_embeddings(original_embedding)
+
+    def get_embeddings_from_embeddings(self, original_embedding):
+        if isinstance(original_embedding,str):
+            original_embedding=deserialize_embedding(original_embedding)
         with torch.no_grad():
             tensor_embedding = torch.tensor(original_embedding).float().to(self.device)
             projected_embedding = self.embedding_model(tensor_embedding)
