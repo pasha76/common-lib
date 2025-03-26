@@ -395,8 +395,7 @@ class VectorManager:
         """Compute cosine similarity between two vectors."""
         a = np.array(a, dtype=float).flatten()
         b = np.array(b, dtype=float).flatten()
-        print("Shape of a:", a.shape)  # Expect (1152,)
-        print("Shape of b:", b.shape)  # Expect (1152,)
+        assert a.shape==b.shape
         return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
     def search_and_rerank(self, 
@@ -406,7 +405,8 @@ class VectorManager:
                         limit: int = 30,page:int=0):
         
         # Build filters from the provided dictionary
-        similarity_threshold=float(os.getenv("MATCH_SIMILARITY_THRESHOLD",0.5))
+        similarity_threshold=float(os.getenv("MATCH_SIMILARITY_THRESHOLD",0.8))
+        print("Similarity threshold",similarity_threshold)
         filters = []
         if filter_dict:
             for k, v in filter_dict.items():
@@ -428,11 +428,12 @@ class VectorManager:
             offset=page * limit,
             score_threshold=similarity_threshold
         )
-        
+    
         # Step 2: Re-rank the results using image embeddings.
         # Assume that each result has a payload with an "image_embedding" field.
         results_with_score = []
         for result in text_results:
+            print("Score",result)
             candidate_image_embedding =deserialize_embedding(result.payload.get("image_embedding"))
             candidate_image_embedding=np.array(candidate_image_embedding)
             if candidate_image_embedding.shape==(1,1152):
@@ -451,7 +452,6 @@ class VectorManager:
 
 if __name__ == "__main__":
     import os
-    from blushy.utils.vector_manager import VectorManager
     from blushy.db import Label,get_session,VisitPost,ClickedItem
     from blushy.utils.base import deserialize_embedding
     os.environ["QDRANT_URL"] = "https://57bae1dd-4983-40da-8fc4-337da62dd839.us-east4-0.gcp.cloud.qdrant.io:6333"
@@ -462,6 +462,6 @@ if __name__ == "__main__":
     label=session.query(Label).filter(Label.id==34251).first()
     embd=deserialize_embedding(label.text_embedding)
     embd_image=deserialize_embedding(label.image_embedding)
-    print(vector_manager.search_and_rerank(embd,embd_image, limit=30,page=0))
+    vector_manager.search_and_rerank(embd,embd_image, limit=30,page=0)
     
     
