@@ -405,7 +405,7 @@ class VectorManager:
                         limit: int = 30,page:int=0):
         
         # Build filters from the provided dictionary
-        similarity_threshold=float(os.getenv("MATCH_SIMILARITY_THRESHOLD",0.6))
+        similarity_threshold=float(os.environ["MATCH_SIMILARITY_THRESHOLD"])
         print("Similarity threshold",similarity_threshold)
         filters = []
         if filter_dict:
