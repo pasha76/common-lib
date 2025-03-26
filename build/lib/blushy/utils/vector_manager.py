@@ -7,6 +7,7 @@ from typing import List, Dict, Union, Optional
 import numpy as np
 from blushy.utils.base import deserialize_embedding
 
+
 class VectorManager:
     def __init__(self, collection_name="vendors", vector_size=768, distance=Distance.COSINE,config=None):
         url = os.getenv('QDRANT_URL')
@@ -431,6 +432,10 @@ class VectorManager:
         results_with_score = []
         for result in text_results:
             candidate_image_embedding =deserialize_embedding(result.payload.get("image_embedding"))
+            candidate_image_embedding=np.array(candidate_image_embedding)
+            if candidate_image_embedding.shape!=(1,1152):
+                continue
+                
             image_score = self.cosine_similarity(candidate_image_embedding, query_image_embedding)
             results_with_score.append({
                 "result": result,
