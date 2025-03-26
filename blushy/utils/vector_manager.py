@@ -406,6 +406,7 @@ class VectorManager:
                         limit: int = 30,page:int=0):
         
         # Build filters from the provided dictionary
+        similarity_threshold=float(os.getenv("MATCH_SIMILARITY_THRESHOLD",0.5))
         filters = []
         if filter_dict:
             for k, v in filter_dict.items():
@@ -424,7 +425,8 @@ class VectorManager:
             query_vector=query_text_embedding,
             query_filter=query_filter,
             limit=limit,
-            offset=page * limit
+            offset=page * limit,
+            score_threshold=similarity_threshold
         )
         
         # Step 2: Re-rank the results using image embeddings.
@@ -457,9 +459,9 @@ if __name__ == "__main__":
         # Initialize VectorManager
     vector_manager = VectorManager(collection_name="items_new")
     session=get_session()
-    label=session.query(Label).filter(Label.id==34253).first()
+    label=session.query(Label).filter(Label.id==34251).first()
     embd=deserialize_embedding(label.text_embedding)
     embd_image=deserialize_embedding(label.image_embedding)
-    print(vector_manager.search_and_rerank(embd,embd_image,filter_dict={"master_clothe_type_id":100000}, limit=30,page=0))
+    print(vector_manager.search_and_rerank(embd,embd_image, limit=30,page=0))
     
     
