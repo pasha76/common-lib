@@ -266,7 +266,7 @@ class Item(Base):
     
 
     def upload_to_gcs(self,gcs_manager:GCSUploader):
-        image=url_to_pil_image(self.url)
+        image=url_to_pil_image(self.url).convert("RGB")
         image_url=gcs_manager.upload_image(image)
         self.image_url=image_url
         return image_url

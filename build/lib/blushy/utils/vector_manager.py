@@ -395,18 +395,19 @@ class VectorManager:
         """Compute cosine similarity between two vectors."""
         a = np.array(a, dtype=float).flatten()
         b = np.array(b, dtype=float).flatten()
-        assert a.shape==b.shape
+        if a.shape!=b.shape:
+            return 0
         return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
     def search_and_rerank(self, 
                         query_text_embedding: list, 
                         query_image_embedding: list,
                         filter_dict: dict = None,
-                        limit: int = 30,page:int=0):
+                        limit: int = 30, page: int = 0):
         
         # Build filters from the provided dictionary
-        similarity_threshold=float(os.environ["MATCH_SIMILARITY_THRESHOLD"])
-        print("Similarity threshold",similarity_threshold)
+        similarity_threshold = float(os.environ["MATCH_SIMILARITY_THRESHOLD"])
+        print("Similarity threshold", similarity_threshold)
         filters = []
         if filter_dict:
             for k, v in filter_dict.items():
@@ -433,10 +434,10 @@ class VectorManager:
         # Assume that each result has a payload with an "image_embedding" field.
         results_with_score = []
         for result in text_results:
-            print("Score",result)
-            candidate_image_embedding =deserialize_embedding(result.payload.get("image_embedding"))
-            candidate_image_embedding=np.array(candidate_image_embedding)
-            if candidate_image_embedding.shape==(1,1152):
+            print("Score", result)
+            candidate_image_embedding = deserialize_embedding(result.payload.get("image_embedding"))
+            candidate_image_embedding = np.array(candidate_image_embedding)
+            if candidate_image_embedding.shape == (1, 1152):
                 continue
                 
             image_score = self.cosine_similarity(candidate_image_embedding, query_image_embedding)
@@ -445,10 +446,20 @@ class VectorManager:
                 "image_score": image_score
             })
         
-        # Sort the list by image_score in descending order.
-        results_with_score = sorted(results_with_score, key=lambda r: r["image_score"], reverse=True)
-        results_with_score = [r["result"] for r in results_with_score]
+        # Step 3: Combine scores and sort.
+        # You can adjust the weights for text and image scores.
+        text_weight = 0.7
+        image_weight = 0.3
+        
+        for item in results_with_score:
+            item["combined_score"] = text_weight * item["result"].score + image_weight * item["image_score"]
+        
+        # Sort by combined score
+        results_with_score.sort(key=lambda x: x["combined_score"], reverse=True)
+        
+        # Return the top results
         return results_with_score
+
 
 if __name__ == "__main__":
     import os
@@ -462,6 +473,7 @@ if __name__ == "__main__":
     label=session.query(Label).filter(Label.id==34251).first()
     embd=deserialize_embedding(label.text_embedding)
     embd_image=deserialize_embedding(label.image_embedding)
-    vector_manager.search_and_rerank(embd,embd_image, limit=30,page=0)
+    result=vector_manager.search_and_rerank(embd,embd_image, limit=30,page=0)
+    print(result)
     
     
