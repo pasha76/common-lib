@@ -2,9 +2,117 @@ import os
 import requests
 from PIL import Image
 from io import BytesIO
+
+import requests
+import json
+
 class InstagramApi:
+    """
+    Instagram kullanıcı gönderilerini ve temel profil bilgilerini
+    RapidAPI Instagram Scraper API'si aracılığıyla çeken sınıf.
+    """
+    def __init__(self, api_key="0c787cdf12msh6918cc0e08fb336p17d56cjsn8f7ba0e92b06"):
+        """
+        Sınıfı başlatır.
+        :param api_key: RapidAPI anahtarınız.
+        """
+        self.posts_url = "https://instagram-scraper-stable-api.p.rapidapi.com/get_ig_user_posts.php"
+        # Yeni profil bilgisi endpoint'i
+        self.profile_hover_url = "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php"
+        self.headers = {
+            "x-rapidapi-key": api_key,
+            "x-rapidapi-host": "instagram-scraper-stable-api.p.rapidapi.com",
+            # Bu Content-Type sadece POST istekleri için geçerlidir, GET için gerekli değildir.
+            # Ancak headers sözlüğünde tutmak sorun yaratmaz.
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+
+    def _make_api_request(self, method, url, params=None, data=None ):
+        """
+        API'ye istek gönderir ve JSON yanıtını döndürür.
+        Yardımcı bir özel metottur. GET veya POST metodunu destekler.
+        """
+        try:
+            if method.upper() == "POST":
+                response = requests.post(url, data=data, headers=self.headers)
+            elif method.upper() == "GET":
+                response = requests.get(url, params=params, headers=self.headers)
+            else:
+                raise ValueError("Desteklenmeyen HTTP metodu. 'GET' veya 'POST' kullanın.")
+
+            response.raise_for_status()  # HTTP hataları için istisna fırlatır (4xx veya 5xx)
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"API isteği sırasında bir hata oluştu: {e}")
+            return None
+        except json.JSONDecodeError:
+            print("API yanıtı geçerli bir JSON değil.")
+            return None
+        except Exception as e:
+            print(f"Beklenmeyen bir hata oluştu: {e}")
+            return None
+
+    def get_user_images(self, username, amount=12):
+        """
+        Belirtilen Instagram kullanıcısının gönderilerinden görüntü URL'lerini alır.
+        :param username: Instagram kullanıcı adı (örneğin, "yungfilly").
+        :param amount: Alınacak gönderi sayısı (varsayılan 12).
+        :return: Görüntü URL'lerinin bir listesi veya hata durumunda boş liste.
+        """
+        payload = {
+            "username_or_url": f"https://www.instagram.com/{username}/",
+            "amount": str(amount )
+        }
+        data = self._make_api_request("POST", self.posts_url, data=payload)
+
+        image_urls = []
+        if data and "posts" in data:
+            for post in data["posts"]:
+                node = post.get("node")
+                if node:
+                    # Carousel gönderileri için ek kontrol (media_type 8)
+                    if node.get("media_type") == 8 and "carousel_media" in node:
+                        for carousel_item in node["carousel_media"]:
+                            if "image_versions2" in carousel_item and "candidates" in carousel_item["image_versions2"]:
+                                # Genellikle ilk aday en yüksek çözünürlüklü olanıdır
+                                if carousel_item["image_versions2"]["candidates"]:
+                                    image_urls.append(carousel_item["image_versions2"]["candidates"][0]["url"])
+                    # Tekli fotoğraf veya video gönderileri
+                    elif "image_versions2" in node and "candidates" in node["image_versions2"]:
+                        # Genellikle ilk aday en yüksek çözünürlüklü olanıdır
+                        if node["image_versions2"]["candidates"]:
+                            image_urls.append(node["image_versions2"]["candidates"][0]["url"])
+        return image_urls
+
+    def get_user_info(self, username):
+        """
+        Belirtilen Instagram kullanıcısının temel profil bilgilerini alır
+        (takipçi sayısı, takip edilen sayısı, tam ad, profil fotoğrafı).
+        :param username: Instagram kullanıcı adı.
+        :return: Kullanıcı bilgilerini içeren bir sözlük veya hata durumunda None.
+        """
+        querystring = {
+            "username_or_url": username
+        }
+        # Yeni endpoint'i ve GET metodunu kullanıyoruz
+        data = self._make_api_request("GET", self.profile_hover_url, params=querystring)
+
+        if data and "user_data" in data:
+            user_data = data["user_data"]
+            user_info = {
+                "follower_count": user_data.get("follower_count"),
+                "following_count": user_data.get("following_count"),
+                "full_name": user_data.get("full_name"),
+                "username": user_data.get("username"),
+                "profile_pic_url": user_data.get("profile_pic_url"),
+                "is_verified": user_data.get("is_verified")
+            }
+            return user_info
+        return None
+
+class InstagramApi_OLD:
     
-    def __init__(self, api_key="4Ypl2A3OAKmshxa6FBGripQK0Htjp1Z79R0jsnPKVK5x9U1c2F"):
+    def __init__(self, api_key="0c787cdf12msh6918cc0e08fb336p17d56cjsn8f7ba0e92b06"):
         self.api_key = api_key
         self.headers = {
             "X-RapidAPI-Key": api_key,

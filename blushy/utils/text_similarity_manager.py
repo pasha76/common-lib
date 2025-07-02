@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 import torch
 from beam import env
+import os
 
 class TextSimilarity:
     def __init__(self, model_name='all-MiniLM-L6-v2', device='cpu'):
@@ -13,6 +14,10 @@ class TextSimilarity:
         :param device: The device to run the model on ('cpu' or 'cuda'). Default is 'cpu'.
         """
         self.device = device
+        
+        # Set environment variable to force eager attention implementation
+        os.environ["TRANSFORMERS_ATTENTION_IMPLEMENTATION"] = "eager"
+        
         if env.is_remote():
             if model_name.startswith("/"):
                 self.model = SentenceTransformer(model_name,  device=self.device)
@@ -20,9 +25,14 @@ class TextSimilarity:
                 self.model = SentenceTransformer(model_name,  device=self.device,cache_folder="/volumes/model-weights/model-weigths/")
         else:
             self.model = SentenceTransformer(model_name, device=self.device)
+        
         # After loading your SentenceTransformer model:
-        self.model[0].auto_model.config.output_attentions = True
-        self.model[0].auto_model.config.attn_implementation = "eager"
+        try:
+        
+            self.model[0].auto_model.config.attn_implementation = "eager"
+            self.model[0].auto_model.config.output_attentions = True
+        except Exception as e:
+            print(f"Warning: Could not set attention configuration: {e}")
 
     def encode_text(self, text):
         """

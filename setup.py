@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='blushy',  # Name of your package
-    version='0.3.97',
+    version='0.4.0',
     packages=find_packages(exclude=['build', 'build.*',"blushy.egg*",'tests','tests.*']),  # Exclude 'build' folder and its subpackages
     install_requires=[
        "pymysql",
        "sqlalchemy",
        "requests",
        "torch",
-       "transformers",
+       "transformers==4.52.4",
        "pillow",
        "lxml",
        "grpcio-tools",
